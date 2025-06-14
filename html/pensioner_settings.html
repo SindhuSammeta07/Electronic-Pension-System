@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - Update Profile</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4f8;
+        color: #333;
+        padding: 0 15%;
+      }
+
+      .container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        margin-top: 50px;
+        transition: all 0.3s ease;
+      }
+
+      .container:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 30px;
+        margin-bottom: 20px;
+        color: #0056b3;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #0056b3;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      input[type="file"] {
+        cursor: pointer;
+      }
+
+      .btn {
+        background-color: #0056b3;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+      }
+
+      .btn:hover {
+        background-color: #004494;
+      }
+
+      .message {
+        color: #28a745;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .error-message {
+        color: #dc3545;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .profile-photo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Settings - Update Profile</h1>
+
+      <form id="updateProfileForm" onsubmit="return updateProfile(event)">
+        <div class="form-group">
+          <label for="profilePhoto">Profile Photo</label>
+          <input
+            type="file"
+            id="profilePhoto"
+            name="profilePhoto"
+            onchange="previewProfilePhoto(event)"
+          />
+          <div>
+            <img
+              id="profilePreview"
+              src="default-profile.jpg"
+              alt="Profile Photo"
+              class="profile-photo"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            required
+            placeholder="Enter your full name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder="Enter your email address"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phoneNumber">Phone Number</label>
+          <input
+            type="text"
+            id="phoneNumber"
+            name="phoneNumber"
+            required
+            placeholder="Enter your phone number"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="maritalStatus">Marital Status</label>
+          <select id="maritalStatus" name="maritalStatus" required>
+            <option value="">Select Marital Status</option>
+            <option value="Single">Single</option>
+            <option value="Married">Married</option>
+            <option value="Divorced">Divorced</option>
+            <option value="Widowed">Widowed</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="spouseName" id="spouseNameLabel" style="display: none"
+            >Spouse Name</label
+          >
+          <input
+            type="text"
+            id="spouseName"
+            name="spouseName"
+            placeholder="Enter spouse's name"
+            style="display: none"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="parentName" id="parentNameLabel" style="display: none"
+            >Parent/Guardian Name</label
+          >
+          <input
+            type="text"
+            id="parentName"
+            name="parentName"
+            placeholder="Enter parent/guardian's name"
+            style="display: none"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address</label>
+          <textarea
+            id="address"
+            name="address"
+            placeholder="Enter your address"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Change Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter new password"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            placeholder="Confirm your password"
+          />
+        </div>
+
+        <button type="submit" class="btn">Save Changes</button>
+      </form>
+
+      <!-- Success Message -->
+      <div id="successMessage" class="message" style="display: none">
+        Your profile has been successfully updated!
+      </div>
+
+      <!-- Error Message -->
+      <div id="errorMessage" class="error-message" style="display: none">
+        There was an error updating your profile. Please try again later.
+      </div>
+    </div>
+
+    <script>
+      // Pre-fill the form with pensioner details on page load
+      async function fetchPensionerDetails() {
+        const pensionerId = localStorage.getItem('id'); // Replace this with the logged-in pensioner ID dynamically
+        try {
+          const response = await fetch(
+            `http://localhost:8080/api/pensioner/details/${pensionerId}`
+          );
+          if (response.ok) {
+            const pension = await response.json();
+            const pensioner = pension.pensioner
+            console.log(pensioner);
+            
+            // Pre-fill form fields
+            document.getElementById("fullName").value = pensioner.fullname || "";
+            document.getElementById("email").value = pensioner.email || "";
+            document.getElementById("phoneNumber").value = pensioner.phone || "";
+            document.getElementById("maritalStatus").value =
+              pensioner.maritalStatus || "";
+            document.getElementById("spouseName").value = pensioner.spouseName || "";
+            document.getElementById("parentName").value = pensioner.parentName || "";
+            document.getElementById("address").value = pensioner.address || "";
+    
+            // Show/Hide spouse or parent fields based on marital status
+            toggleMaritalFields(pensioner.maritalStatus);
+          } else {
+            console.error("Error fetching pensioner details:", response);
+            alert("Failed to fetch pensioner details. Please try again later.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred while fetching pensioner details.");
+        }
+      }
+    
+      // Toggle spouse/parent fields based on marital status
+      function toggleMaritalFields(maritalStatus) {
+        const spouseNameField = document.getElementById("spouseName");
+        const spouseNameLabel = document.getElementById("spouseNameLabel");
+        const parentNameField = document.getElementById("parentName");
+        const parentNameLabel = document.getElementById("parentNameLabel");
+    
+        if (maritalStatus === "Married") {
+          spouseNameField.style.display = "block";
+          spouseNameLabel.style.display = "block";
+          parentNameField.style.display = "none";
+          parentNameLabel.style.display = "none";
+        } else {
+          spouseNameField.style.display = "none";
+          spouseNameLabel.style.display = "none";
+          parentNameField.style.display = "block";
+          parentNameLabel.style.display = "block";
+        }
+      }
+    
+      // Handle profile update form submission
+      async function updateProfile(event) {
+        event.preventDefault(); // Prevent traditional form submission
+    
+        // Get form data
+        const pensionerId = localStorage.getItem('id'); // Replace this with the logged-in pensioner ID dynamically
+        const fullname = document.getElementById("fullName").value;
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("phoneNumber").value;
+        const maritalStatus = document.getElementById("maritalStatus").value;
+        const spouseName = document.getElementById("spouseName").value;
+        const parentName = document.getElementById("parentName").value;
+        const address = document.getElementById("address").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+    
+        // Validation: Check password match
+        if (password !== confirmPassword) {
+          document.getElementById("errorMessage").innerText =
+            "Passwords do not match.";
+          document.getElementById("errorMessage").style.display = "block";
+          return;
+        }
+    
+        // Prepare payload
+        const payload = {
+          fullname,
+          email,
+          phone,
+          maritalStatus,
+          spouseName,
+          parentName,
+          address,
+          password,
+        };
+    
+        try {
+          const response = await fetch(
+            `http://localhost:8080/api/pensioner/update/${pensionerId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            }
+          );
+    
+          if (response.ok) {
+            // Reset the form and show success message
+            document.getElementById("updateProfileForm").reset();
+            fetchPensionerDetails;
+            document.getElementById("successMessage").style.display = "block";
+            document.getElementById("errorMessage").style.display = "none";
+          } else {
+            const error = await response.json();
+            document.getElementById("errorMessage").innerText = error.message;
+            document.getElementById("errorMessage").style.display = "block";
+            document.getElementById("successMessage").style.display = "none";
+          }
+        } catch (error) {
+          console.error("Error updating profile:", error);
+          document.getElementById("errorMessage").innerText =
+            "An error occurred while updating your profile.";
+          document.getElementById("errorMessage").style.display = "block";
+          document.getElementById("successMessage").style.display = "none";
+        }
+      }
+    
+      // Load pensioner details when the page loads
+      window.onload = fetchPensionerDetails;
+    </script>
+    
+  </body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Users</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+      }
+      .sidebar {
+        height: 100vh;
+        width: 250px;
+        background-color: #0056b3;
+        padding-top: 30px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        color: white;
+        font-size: 18px;
+      }
+      .sidebar a {
+        display: block;
+        padding: 15px;
+        text-decoration: none;
+        color: white;
+        margin: 10px 0;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+      .sidebar a:hover {
+        background-color: #004494;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        width: 100%;
+        background-color: #ffffff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+      th {
+        background-color: #0056b3;
+        color: white;
+      }
+      .btn {
+        background-color: #0056b3;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background-color: #004494;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2 style="text-align: center; color: white">Admin Dashboard</h2>
+      <a href="admin_dashboard.html">Dashboard</a>
+      <a href="manage_users.html">Manage Users</a>
+      <a href="manage_applications.html">Manage Applications</a>
+      <a href="view_payments.html">View Payments</a>
+      <a href="generate_reports.html">Generate Reports</a>
+      <a href="admin_logout.html" class="logout-btn">Logout</a>
+    </div>
+
+    <div class="content">
+      <h1>Manage Users</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone number</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTable">
+          <!-- User data will go here -->
+          <!-- <tr>
+            <td>1</td>
+            <td>John Doe</td>
+            <td>john.doe@example.com</td>
+            <td>Pensioner</td>
+            <td>
+              <button class="btn">Delete</button>
+            </td>
+          </tr> -->
+        </tbody>
+      </table>
+    </div>
+    <script>
+      // Fetch and populate pensioner data
+      async function fetchPensioners() {
+        try {
+          const response = await fetch("http://localhost:8080/api/get-all-pensioner");
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+  
+          const pensioners = await response.json();
+          const tableBody = document.getElementById("userTable");
+          tableBody.innerHTML = ""; // Clear any existing rows
+  
+          pensioners.forEach(pensioner => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${pensioner.pensionerId}</td>
+              <td>${pensioner.fullname}</td>
+              <td>${pensioner.email}</td>
+              <td>${pensioner.phone}</td>
+              <td>Pensioner</td>
+              <td>
+                <button class="btn" onclick="deletePensioner('${pensioner.id}')">Delete</button>
+              </td>
+            `;
+            tableBody.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Failed to fetch pensioner data:", error);
+          alert("Error loading pensioner data. Please try again.");
+        }
+      }
+  
+      // Delete pensioner function
+      async function deletePensioner(id) {
+        if (confirm("Are you sure you want to delete this pensioner?")) {
+          try {
+            const response = await fetch(`http://localhost:8080/api/delete-pensioner/${id}`, {
+              method: "DELETE",
+            });
+            if (response.ok) {
+              alert("Pensioner deleted successfully.");
+              fetchPensioners(); // Refresh the table
+            } else {
+              const error = await response.json();
+              alert(`Error: ${error.message}`);
+            }
+          } catch (error) {
+            console.error("Failed to delete pensioner:", error);
+            alert("An error occurred. Please try again.");
+          }
+        }
+      }
+  
+      // Load pensioner data on page load
+      window.onload = fetchPensioners;
+    </script>
+  </body>
+</html>

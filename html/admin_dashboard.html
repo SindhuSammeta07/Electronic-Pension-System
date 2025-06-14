@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7fc;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      /* Sidebar Styles */
+      .sidebar {
+        height: 100vh;
+        width: 250px;
+        background-color: #003366;
+        padding-top: 30px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        color: white;
+        font-size: 18px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar a {
+        display: block;
+        padding: 15px;
+        text-decoration: none;
+        color: white;
+        margin: 10px 0;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+
+      .sidebar a:hover {
+        background-color: #004d80;
+      }
+
+      /* Content Area Styles */
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        width: calc(100% - 250px);
+        background-color: #ffffff;
+      }
+
+      header {
+        background-color: #003366;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        margin-bottom: 30px;
+        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn {
+        background-color: #006f96;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        margin: 10px 0;
+        display: inline-block;
+        transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #005c7f;
+      }
+
+      .logout-btn {
+        background-color: #004d40;
+        margin-top: 30px;
+        display: inline-block;
+      }
+
+      .logout-btn:hover {
+        background-color: #003c33;
+      }
+
+      .dashboard-item {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        transition: transform 0.3s ease;
+      }
+
+      .dashboard-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      .dashboard-item h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      .dashboard-item p {
+        font-size: 16px;
+        color: #777;
+      }
+
+      .cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 0 20px;
+      }
+
+      .card {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      .card h3 {
+        font-size: 22px;
+        color: #003366;
+        margin-bottom: 10px;
+      }
+
+      .card p {
+        font-size: 16px;
+        color: #777;
+      }
+
+      .card .btn {
+        margin-top: 15px;
+      }
+
+      /* Analytics Section */
+      .analytics-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 0 20px;
+        margin-bottom: 40px;
+      }
+
+      .analytics-card {
+        background-color: #e3f2fd;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .analytics-card h3 {
+        font-size: 26px;
+        color: #003366;
+        margin-bottom: 10px;
+      }
+
+      .analytics-card p {
+        font-size: 18px;
+        color: #004d80;
+      }
+
+      /* Progress Bar */
+      .progress-container {
+        margin-top: 20px;
+      }
+
+      .progress-bar {
+        background-color: #e0e0e0;
+        border-radius: 20px;
+        height: 20px;
+        width: 100%;
+      }
+
+      .progress {
+        background-color: #006f96;
+        height: 100%;
+        border-radius: 20px;
+        width: 70%; /* Change this value dynamically */
+      }
+
+      /* Notifications Panel */
+      .notifications-panel {
+        background-color: #f5f5f5;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 40px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .notification {
+        background-color: #ffffff;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .notification h4 {
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+
+      .notification p {
+        font-size: 14px;
+        color: #555;
+      }
+
+      /* Search Table */
+      .search-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 40px;
+        margin-bottom: 40px;
+      }
+
+      .search-table th,
+      .search-table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: center;
+      }
+
+      .search-table th {
+        background-color: #f4f4f4;
+        color: #333;
+      }
+
+      .search-table tr:hover {
+        background-color: #f1f1f1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2 style="text-align: center; color: white">Admin Dashboard</h2>
+      <a href="admin_dashboard.html">Dashboard</a>
+      <a href="manage_users.html">Manage Users</a>
+      <a href="manage_applications.html">Manage Applications</a>
+      <a href="view_payments.html">View Payments</a>
+      <a href="generate_reports.html">Generate Reports</a>
+      <a href="admin_logout.html" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+      <header>
+        <h1>Admin Dashboard</h1>
+      </header>
+
+      <!-- Analytics Section -->
+      <div class="analytics-container">
+        <div class="analytics-card">
+          <h3>Total Users</h3>
+          <p id="total-users">Loading...</p>
+        </div>
+
+        <div class="analytics-card">
+          <h3>Pending Applications</h3>
+          <p id="pending-applications">Loading...</p>
+        </div>
+
+        <div class="analytics-card">
+          <h3>Total Payments</h3>
+          <p id="total-payments">Loading...</p>
+        </div>
+
+        <div class="analytics-card">
+          <h3>Reports Generated</h3>
+          <p>35</p>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-container">
+        <h3>Applications Processed</h3>
+        <div class="progress-bar">
+          <div class="progress"></div>
+        </div>
+      </div>
+
+      <!-- Dashboard Cards -->
+      <div class="cards-container">
+        <div class="card">
+          <h3>Manage Users</h3>
+          <p>View and manage pensioners and administrators.</p>
+          <a href="manage_users.html" class="btn">Manage Users</a>
+        </div>
+
+        <div class="card">
+          <h3>Manage Pension Applications</h3>
+          <p>Approve or reject pension applications.</p>
+          <a href="manage_applications.html" class="btn">Manage Applications</a>
+        </div>
+
+        <div class="card">
+          <h3>View Payment History</h3>
+          <p>View and manage pension payments.</p>
+          <a href="view_payments.html" class="btn">View Payments</a>
+        </div>
+
+        <div class="card">
+          <h3>Generate Reports</h3>
+          <p>Generate reports on pension payments and users.</p>
+          <a href="generate_reports.html" class="btn">Generate Reports</a>
+        </div>
+      </div>
+
+      <!-- Notifications Panel -->
+      <div class="notifications-panel">
+        <h3>Recent Notifications</h3>
+        <div class="notification">
+          <h4>Application Approved</h4>
+          <p>Pension application for John Doe has been approved.</p>
+        </div>
+        <div class="notification">
+          <h4>Payment Processed</h4>
+          <p>
+            Payment of ₹20,000 has been successfully processed to Jane Smith.
+          </p>
+        </div>
+      </div>
+
+      <!-- Searchable Table -->
+      <h3>Search Users</h3>
+      <input type="text" id="search" placeholder="Search by name..." />
+      <table class="search-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody id="userTable">
+          <!-- <tr>
+            <td>John Doe</td>
+            <td>Pensioner</td>
+            <td>Active</td>
+          </tr>
+          <tr>
+            <td>Jane Smith</td>
+            <td>Admin</td>
+            <td>Active</td>
+          </tr>
+          <tr>
+            <td>Michael Johnson</td>
+            <td>Pensioner</td>
+            <td>Pending</td>
+          </tr> -->
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      // Search functionality for the table
+      document.getElementById("search").addEventListener("input", function (e) {
+        let query = e.target.value.toLowerCase();
+        let rows = document.querySelectorAll("#userTable tr");
+        rows.forEach((row) => {
+          let name = row.cells[0].textContent.toLowerCase();
+          if (name.includes(query)) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      });
+      async function fetchUsers() {
+      try {
+        // Fetch pensioners
+        const pensionersResponse = await fetch('http://localhost:8080/api/get-all-pensioner');
+        const pensioners = await pensionersResponse.json();
+
+        // Fetch admins
+        const adminsResponse = await fetch('http://localhost:8080/api/get-all-admin');
+        const admins = await adminsResponse.json();
+
+        // Combine pensioners and admins
+        const combinedUsers = [...pensioners.map(p => ({
+          id: p.pensionerId,
+          name: p.fullname,
+          role: 'Pensioner',
+        })), ...admins.map(a => ({
+          id: a.adminId,
+          name: a.fullname,
+          role: 'Admin',
+        }))];
+
+        // Display the combined list in the table
+        const tableBody = document.getElementById('userTable');
+        tableBody.innerHTML = ''; // Clear existing table rows
+
+        combinedUsers.forEach(user => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+          <td>${user.id}</td>
+            <td>${user.name}</td>
+            <td>${user.role}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    }
+      // Chart.js example: Users growth trend chart
+      // const ctx = document.createElement("canvas");
+      // document.querySelector(".content").prepend(ctx);
+      // const userChart = new Chart(ctx, {
+      //   type: "line",
+      //   data: {
+      //     labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+      //     datasets: [
+      //       {
+      //         label: "Users Growth",
+      //         data: [100, 200, 300, 400, 500],
+      //         borderColor: "rgba(0, 123, 255, 1)",
+      //         fill: false,
+      //         tension: 0.1,
+      //       },
+      //     ],
+      //   },
+      //   options: {
+      //     responsive: true,
+      //     scales: {
+      //       x: {
+      //         beginAtZero: true,
+      //       },
+      //       y: {
+      //         beginAtZero: true,
+      //       },
+      //     },
+      //   },
+      // });
+      async function fetchAnalyticsData() {
+      try {
+        // Fetch the total users
+        const usersResponse = await fetch('http://localhost:8080/api/total-pensioners');
+        if (usersResponse.ok) {
+          const totalUsers = await usersResponse.json();
+          document.getElementById('total-users').textContent = totalUsers;
+        }
+
+        // Fetch the total pending applications
+        const pendingResponse = await fetch('http://localhost:8080/api/total-pending-applications');
+        if (pendingResponse.ok) {
+          const totalPending = await pendingResponse.json();
+          document.getElementById('pending-applications').textContent = totalPending;
+        }
+
+        // Fetch the total pension amount
+        const paymentsResponse = await fetch('http://localhost:8080/api/total-pension-amount');
+        if (paymentsResponse.ok) {
+          const totalPayments = await paymentsResponse.json();
+          document.getElementById('total-payments').textContent = `₹${totalPayments.toLocaleString()}`;
+        }
+      } catch (error) {
+        console.error('Error fetching analytics data:', error);
+        // If there's an error, you can display some fallback message
+        document.getElementById('total-users').textContent = 'Error';
+        document.getElementById('pending-applications').textContent = 'Error';
+        document.getElementById('total-payments').textContent = 'Error';
+      }
+    }
+
+    // Call the fetchAnalyticsData function when the page loads
+    document.addEventListener('DOMContentLoaded', fetchAnalyticsData);
+    document.addEventListener('DOMContentLoaded', fetchUsers);
+
+    </script>
+  </body>
+</html>

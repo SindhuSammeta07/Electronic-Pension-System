@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logout</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4f8;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 400px;
+      }
+
+      h1 {
+        font-size: 24px;
+        color: #0056b3;
+        margin-bottom: 20px;
+      }
+
+      p {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 30px;
+      }
+
+      .btn {
+        background-color: #0056b3;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #004494;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Logout</h1>
+      <p>Are you sure you want to log out?</p>
+      <button class="btn" onclick="logout()">Log Out</button>
+    </div>
+
+    <script>
+      // Logout function
+      function logout() {
+        // Perform any necessary cleanup (e.g., removing session data or JWT tokens)
+        // Redirect to login page
+        localStorage.removeItem("id");
+        localStorage.removeItem("name");
+        localStorage.removeItem("role");
+        window.location.href = "login.html"; // Update this with the actual login page URL
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - E-Pension System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #004aad;
+      --secondary-color: #00a859;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #004aad, #00a859);
+      color: white;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      padding: 40px 0;
+    }
+
+    .login-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      color: #333;
+    }
+
+    .logo-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo-section img {
+      height: 80px;
+      margin-bottom: 15px;
+    }
+
+    .logo-section h1 {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .logo-section p {
+      color: #666;
+      margin-top: 5px;
+      font-size: 1rem;
+    }
+
+    form {
+      margin: 20px 0;
+      text-align: left;
+      max-width: 400px;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .form-control {
+      border-radius: 20px;
+      padding: 10px 15px;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(0, 74, 173, 0.25);
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      border: none;
+      padding: 12px 30px;
+      font-weight: 500;
+      width: 100%;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: #003580;
+      transform: scale(1.02);
+    }
+
+    p.mt-3 a {
+      color: var(--primary-color);
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    p.mt-3 a:hover {
+      text-decoration: underline;
+    }
+
+    .register-link {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1rem;
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+
+    .role-selection {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .role-selection button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .role-selection button:hover {
+      background: #003580;
+      transform: scale(1.05);
+    }
+
+    .role-selection button.active {
+      background: var(--secondary-color);
+      font-weight: bold;
+    }
+
+    @media (max-width: 576px) {
+      .role-selection {
+        flex-direction: column;
+      }
+
+      .role-selection button {
+        width: 100%;
+      }
+    }
+
+    /* Modal Styles */
+    .modal-content {
+      border-radius: 15px;
+    }
+
+    .modal-header {
+      background-color: var(--primary-color);
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="login-container">
+      <div class="logo-section">
+        <img src="/html/images/ap.png" alt="AP Government Logo" />
+        <h1>E-Pension System</h1>
+        <p>User Login</p>
+      </div>
+      <h2 class="text-center mb-4">Login</h2>
+
+      <div class="role-selection">
+        <button id="adminButton" class="role-btn">Admin</button>
+        <button id="pensionerButton" class="role-btn">Pensioner</button>
+      </div>
+
+      <!-- Admin Login Form -->
+      <form id="adminLoginForm" action="/admin/login" method="POST" style="display: none">
+        <h4>Admin Login</h4>
+        <div class="mb-3">
+          <label for="adminEmail" class="form-label">Email</label>
+          <input type="text" class="form-control" id="adminEmail" name="email"
+            placeholder="Enter your email" aria-label="Admin Email" required />
+        </div>
+        <div class="mb-3">
+          <label for="adminPassword" class="form-label">Password</label>
+          <input type="password" class="form-control" id="adminPassword" name="password"
+            placeholder="Enter your password" aria-label="Admin Password" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+        <p class="mt-3">
+          <a href="#" data-bs-toggle="modal" data-bs-target="#adminResetPasswordModal">Forgot Password?</a>
+        </p>
+      </form>
+
+      <!-- Pensioner Login Form -->
+      <form id="pensionerLoginForm" action="/pensioner/login" method="POST" style="display: none">
+        <h4>Pensioner Login</h4>
+        <div class="mb-3">
+          <label for="pensionerEmail" class="form-label">Email</label>
+          <input type="text" class="form-control" id="pensionerEmail" name="email"
+            placeholder="Enter your email" aria-label="Pensioner Email" required />
+        </div>
+        <div class="mb-3">
+          <label for="pensionerPassword" class="form-label">Password</label>
+          <input type="password" class="form-control" id="pensionerPassword" name="password"
+            placeholder="Enter your password" aria-label="Pensioner Password" required />
+        </div>
+        <!-- <div class="mb-3">
+          <label for="hint" class="form-label">Hint</label>
+          <p id="hint" class="form-text">
+            Your surname and year of birth (e.g., Smith1970)
+          </p>
+        </div> -->
+        <button type="submit" class="btn btn-primary">Login</button>
+        <p class="mt-3">
+          <a href="#" data-bs-toggle="modal" data-bs-target="#pensionerResetPasswordModal">Forgot Password?</a>
+        </p>
+      </form>
+
+      <p class="register-link">
+        Don't have an account? <a href="register.html">Register</a>
+      </p>
+    </div>
+  </div>
+  <!-- Admin Reset Password Modal -->
+  <div class="modal fade" id="adminResetPasswordModal" tabindex="-1" aria-labelledby="adminResetPasswordModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="adminResetPasswordModalLabel">
+            Admin Reset Password
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Admin Phone Number Section -->
+          <div id="adminEmailSection">
+            <h5>Enter Admin Email</h5>
+            <div class="mb-3">
+              <label for="adminEmailReset" class="form-label">Email</label>
+              <input type="text" class="form-control" id="adminEmailReset" placeholder="Enter admin email id"
+                required />
+            </div>
+            <button type="button" class="btn btn-primary" onclick="sendAdminOTP()">
+              Send OTP
+            </button>
+          </div>
+
+          <!-- Admin OTP Section -->
+          <div id="adminOtpSection" style="display: none">
+            <h5>Enter OTP</h5>
+            <div class="mb-3">
+              <label for="adminOtpInput" class="form-label">OTP</label>
+              <input type="text" class="form-control" id="adminOtpInput" placeholder="Enter the OTP sent to your phone"
+                required />
+            </div>
+            <button type="button" class="btn btn-primary" onclick="verifyAdminOTP()">
+              Verify OTP
+            </button>
+          </div>
+
+          <!-- Admin New Password Section -->
+          <div id="adminNewPasswordSection" style="display: none">
+            <h5>Set a New Password</h5>
+            <div class="mb-3">
+              <label for="adminNewPassword" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="adminNewPassword" placeholder="Enter your new password"
+                required />
+            </div>
+            <button type="button" class="btn btn-primary" onclick="setAdminNewPassword()">
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pensioner Reset Password Modal -->
+  <div class="modal fade" id="pensionerResetPasswordModal" tabindex="-1"
+    aria-labelledby="pensionerResetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pensionerResetPasswordModalLabel">
+            Pensioner Reset Password
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Pensioner Phone Number Section -->
+          <div id="pensionerEmailSection">
+            <h5>Enter Pensioner Email</h5>
+            <div class="mb-3">
+              <label for="pensionerEmailReset" class="form-label">Email</label>
+              <input type="text" class="form-control" id="pensionerEmailReset"
+                placeholder="Enter pensioner email" required />
+            </div>
+            <button type="button" class="btn btn-primary" onclick="sendPensionerOTP()">
+              Send OTP
+            </button>
+          </div>
+
+          <!-- Pensioner OTP Section -->
+          <div id="pensionerOtpSection" style="display: none">
+            <h5>Enter OTP</h5>
+            <div class="mb-3">
+              <label for="pensionerOtpInput" class="form-label">OTP</label>
+              <input type="text" class="form-control" id="pensionerOtpInput"
+                placeholder="Enter the OTP sent to your phone" required />
+            </div>
+            <button type="button" class="btn btn-primary" onclick="verifyPensionerOTP()">
+              Verify OTP
+            </button>
+          </div>
+
+          <!-- Pensioner New Password Section -->
+          <div id="pensionerNewPasswordSection" style="display: none">
+            <h5>Set a New Password</h5>
+            <div class="mb-3">
+              <label for="pensionerNewPassword" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="pensionerNewPassword"
+                placeholder="Enter your new password" required />
+            </div>
+            <button type="button" class="btn btn-primary" onclick="setPensionerNewPassword()">
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forgotPasswordModalLabel">
+            Reset Password
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="pensionerResetForm">
+            <h5>Pensioner Password Reset</h5>
+            <div class="mb-3">
+              <label for="phoneNumberReset" class="form-label">Phone Number</label>
+              <input type="text" class="form-control" id="phoneNumberReset" placeholder="Enter your phone number"
+                required />
+            </div>
+            <button type="button" class="btn btn-primary" onclick="sendPensionerResetLink()">
+              Send Reset Link
+            </button>
+          </div>
+
+          <div id="adminResetForm" style="display: none">
+            <h5>Admin Password Reset</h5>
+            <div class="mb-3">
+              <label for="adminEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="adminEmail" placeholder="Enter your email" required />
+            </div>
+            <button type="button" class="btn btn-primary" onclick="sendAdminResetLink()">
+              Send Reset Link
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const adminButton = document.getElementById("adminButton");
+    const pensionerButton = document.getElementById("pensionerButton");
+    const adminLoginForm = document.getElementById("adminLoginForm");
+    const pensionerLoginForm = document.getElementById("pensionerLoginForm");
+    const adminResetForm = document.getElementById("adminResetForm");
+    const pensionerResetForm = document.getElementById("pensionerResetForm");
+
+    adminButton.addEventListener("click", () => {
+      adminButton.classList.add("active");
+      pensionerButton.classList.remove("active");
+      adminLoginForm.style.display = "block";
+      pensionerLoginForm.style.display = "none";
+    });
+
+    pensionerButton.addEventListener("click", () => {
+      pensionerButton.classList.add("active");
+      adminButton.classList.remove("active");
+      pensionerLoginForm.style.display = "block";
+      adminLoginForm.style.display = "none";
+    });
+
+    async function handleAdminLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById("adminEmail").value;
+      const password = document.getElementById("adminPassword").value;
+
+      try {
+        const response = await fetch("http://localhost:8080/api/admin/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem('id',data.adminId)
+          localStorage.setItem('name',data.adminName)
+          localStorage.setItem('role','admin')
+          alert("Admin logged in successfully!");
+          window.location.href = "/admin_dashboard.html";
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (error) {
+        console.error("Login failed:", error);
+        alert("An error occurred during admin login. Please try again.");
+      }
+    }
+
+    async function handlePensionerLogin(event) {
+      event.preventDefault(); 
+      const email = document.getElementById("pensionerEmail").value;
+      const password = document.getElementById("pensionerPassword").value;
+
+      try {
+        const response = await fetch("http://localhost:8080/api/pensioner/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });        
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem('id',data.pensionerId)
+          localStorage.setItem('name',data.pensionerName)
+          localStorage.setItem('role','pensioner')
+          alert("Pensioner logged in successfully!");
+          window.location.href = "/pensioner_dashboard.html";
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (error) {
+        console.error("Login failed:", error);
+        alert("An error occurred during pensioner login. Please try again.");
+      }
+    }
+
+    async function sendPensionerOTP() {
+      const email = document.getElementById("pensionerEmailReset").value;
+
+      try {
+        const response = await fetch("http://localhost:8080/api/pensioner/login/generate-otp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+
+        if (response.ok) {
+          document.getElementById("otpSection").style.display = "block";
+          alert("OTP sent to " + email);
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (error) {
+        console.error("Failed to send OTP:", error);
+        alert("An error occurred. Please try again.");
+      }
+    }
+
+    async function verifyPensionerOTP() {
+      const email = document.getElementById("pensionerEmailReset").value;
+      const otp = document.getElementById("otpInput").value;
+
+      try {
+        const response = await fetch("http://localhost:8080/api/pensioner/login/verify-otp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, otp }),
+        });
+
+        if (response.ok) {
+          console.log(response);
+          document.getElementById("newPasswordSection").style.display = "block";
+          alert("OTP verified successfully. Please set a new password.");
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (error) {
+        console.error("Failed to verify OTP:", error);
+        alert("An error occurred. Please try again.");
+      }
+    }
+
+    async function setNewPassword() {
+      const email = document.getElementById("pensionerEmailReset").value;
+      const newPassword = document.getElementById("newPassword").value;
+
+      try {
+        const response = await fetch("http://localhost:8080/api/pensioner/login/set-new-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, newPassword }),
+        });
+
+        if (response.ok) {
+          alert("Password reset successfully. Redirecting to login page.");
+          window.location.href = "/login.html";
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (error) {
+        console.error("Failed to set new password:", error);
+        alert("An error occurred. Please try again.");
+      }
+    }
+
+    async function sendAdminOTP() {
+      const email = document.getElementById("adminEmailReset").value;
+
+      try {
+        const response = await fetch("http://localhost:8080/api/admin/login/generate-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        if (response.ok) {
+          document.getElementById("adminOtpSection").style.display = "block";
+          alert("OTP sent to admin email.");
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (error) {
+        alert("Failed to send OTP. Please try again.");
+      }
+    }
+
+    async function verifyAdminOTP() {
+      const email = document.getElementById("adminEmailReset").value;
+      const otp = document.getElementById("adminOtpInput").value;
+
+      try {
+        const response = await fetch("http://localhost:8080/api/admin/login/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp }),
+        });
+
+        if (response.ok) {
+          document.getElementById("adminNewPasswordSection").style.display = "block";
+          alert("OTP verified successfully. Set your new password.");
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (error) {
+        alert("OTP verification failed. Please try again.");
+      }
+    }
+
+    async function setAdminNewPassword() {
+      const email = document.getElementById("adminEmailReset").value;
+      const newPassword = document.getElementById("adminNewPassword").value;
+
+      try {
+        const response = await fetch("http://localhost:8080/api/admin/login/set-new-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, newPassword }),
+        });
+
+        if (response.ok) {
+          alert("Password reset successfully for admin. Redirecting to login...");
+          window.location.href = "/login.html";
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (error) {
+        alert("Failed to reset password. Please try again.");
+      }
+    }
+
+    // Attach event listeners to forms
+    adminLoginForm.addEventListener("submit", handleAdminLogin);
+    pensionerLoginForm.addEventListener("submit", handlePensionerLogin);
+    pensionerLoginForm.style.display = "none";
+    // Default view: Admin selected
+    adminButton.click();
+  </script>
+</body>
+
+</html>

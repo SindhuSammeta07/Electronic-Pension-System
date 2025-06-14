@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Track Pension Application</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f0f4f8;
+        color: #333;
+        padding: 0 15%;
+      }
+
+      .container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        margin-top: 50px;
+        transition: all 0.3s ease;
+      }
+
+      .container:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 30px;
+        margin-bottom: 20px;
+        color: #0056b3;
+      }
+
+      label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: 600;
+        color: #555;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ccd6eb;
+        border-radius: 8px;
+        font-size: 16px;
+        background-color: #f9f9fc;
+        transition: all 0.3s ease;
+      }
+
+      input[type="text"]:focus {
+        border-color: #0056b3;
+        background-color: #fff;
+      }
+
+      button {
+        padding: 14px 25px;
+        background-color: #0056b3;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #004494;
+      }
+
+      .status-section {
+        margin-top: 20px;
+      }
+
+      .status-header {
+        font-size: 20px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .status-details {
+        background-color: #f9f9fc;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
+      }
+
+      .status-details p {
+        margin: 10px 0;
+      }
+
+      .status-details .status {
+        font-weight: bold;
+        color: #28a745; /* Green color for success */
+      }
+
+      .status-details .status.pending {
+        color: #ff9800; /* Orange for pending */
+      }
+
+      .status-details .status.rejected {
+        color: #dc3545; /* Red for rejected */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Track Your Pension Application</h1>
+
+      <!-- Form to enter Pension ID -->
+      <form id="trackForm">
+        <div class="form-section">
+          <label for="pensionIdInput">Enter Pension ID:</label>
+          <input
+            type="text"
+            id="pensionIdInput"
+            name="pensionIdInput"
+            placeholder="Enter your Pension ID"
+            required
+          />
+        </div>
+
+        <button type="button" onclick="trackApplication()">
+          Track Application
+        </button>
+      </form>
+
+      <!-- Application Status Section -->
+      <div id="statusSection" class="status-section" style="display: none">
+        <div class="status-header">Application Status</div>
+        <div id="statusDetails" class="status-details"></div>
+      </div>
+    </div>
+    <script>
+      // Function to track the application based on Pension ID
+      async function trackApplication() {
+        const pensionId = document.getElementById("pensionIdInput").value;
+    
+        // Call the backend API to fetch application details
+        try {
+          const response = await fetch(`http://localhost:8080/api/pensioner/track-application/${encodeURIComponent(pensionId)}`, {
+            method: "GET",
+          });
+    
+          if (response.ok) {
+            const data = await response.json();
+            displayStatus(data);
+          } else {
+            const errorMessage = await response.text();
+            displayStatus({ error: errorMessage });
+          }
+        } catch (error) {
+          displayStatus({ error: "Unable to connect to the server. Please try again later." });
+        }
+      }
+    
+      // Function to display the status of the application
+      function displayStatus(response) {
+        const statusSection = document.getElementById("statusSection");
+        const statusDetails = document.getElementById("statusDetails");
+    
+        // Clear previous status
+        statusDetails.innerHTML = "";
+    
+        if (response.error) {
+          statusDetails.innerHTML = `<p>${response.error}</p>`;
+          statusSection.style.display = "block";
+        } else {
+          // Name and Application Type
+          statusDetails.innerHTML = `<p><strong>Name:</strong> ${response.name}</p>`;
+          statusDetails.innerHTML += `<p><strong>Application Type:</strong> ${response.applicationType}</p>`;
+    
+          // Application Status and Date
+          statusDetails.innerHTML += `<p><strong>Status:</strong> <span class="status ${getStatusClass(
+            response.status
+          )}">${response.status}</span></p>`;
+          statusDetails.innerHTML += `<p><strong>Approved Date:</strong> ${response.ApprovedDate}</p>`;
+          statusDetails.innerHTML += `<p><strong> Amount:</strong> ${response.approvedAmount}</p>`;
+    
+          statusSection.style.display = "block";
+        }
+      }
+    
+      // Function to return status class based on the application status
+      function getStatusClass(status) {
+        if (status === "Approved") {
+          return "approved";
+        } else if (status === "Pending") {
+          return "pending";
+        } else if (status === "Rejected") {
+          return "rejected";
+        }
+        return "";
+      }
+    </script>
+    
+  </body>
+</html>

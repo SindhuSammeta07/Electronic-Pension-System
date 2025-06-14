@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - E-Pension System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    /* Sidebar Styles */
+    #sidebar {
+      height: 100%;
+      width: 250px;
+      background: linear-gradient(180deg, #2c3e50 0%, #3498db 100%);
+      position: fixed;
+      top: 0;
+      left: -250px;
+      transition: 0.3s;
+      padding-top: 20px;
+      z-index: 1000;
+    }
+
+    #sidebar.active {
+      left: 0;
+    }
+
+    #sidebar a {
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      transition: 0.3s;
+    }
+
+    #sidebar a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    #sidebar a:hover,
+    #sidebar a.active {
+      background-color: #002a63;
+    }
+
+    /* Sidebar animations */
+    #sidebar a {
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    #sidebar a:hover {
+      padding-left: 25px;
+    }
+
+    #sidebar a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 2px;
+      width: 0;
+      background: #fff;
+      transition: width 0.3s ease;
+    }
+
+    #sidebar a:hover::after {
+      width: 100%;
+    }
+
+    /* Main Content Styling */
+    .main-content {
+      margin-left: 0;
+      transition: margin-left 0.3s;
+      padding: 20px;
+    }
+
+    .main-content.active {
+      margin-left: 250px;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      background-color: white;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .sidebar-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #003580;
+    }
+
+    .notification-toggle {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ff4444;
+      color: white;
+      border-radius: 50%;
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+
+    /* Dashboard specific styles */
+    .welcome-section {
+      background: linear-gradient(135deg, #003580 0%, #004aad 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+
+    .welcome-section h1 {
+      margin: 0;
+      font-size: 1.8em;
+    }
+
+    .welcome-section p {
+      margin: 10px 0 0 0;
+      opacity: 0.9;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .action-button {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 0.7rem 1.2rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .action-button:hover {
+      background: #f8f9fa;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-button i {
+      font-size: 1rem;
+      color: #0d6efd;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .dashboard-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .card-header i {
+      font-size: 24px;
+      color: #003580;
+      margin-right: 10px;
+    }
+
+    .card-title {
+      margin: 0;
+      color: #333;
+      font-size: 1.2em;
+    }
+
+    .card-content {
+      color: #666;
+    }
+
+    .notification-panel {
+      position: fixed;
+      right: -300px;
+      top: 0;
+      width: 300px;
+      height: 100%;
+      background: white;
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+      transition: right 0.3s ease;
+      z-index: 1000;
+    }
+
+    .notification-panel.active {
+      right: 0;
+    }
+
+    .notification-header {
+      background: #003580;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notification-list {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .notification-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    .notification-item:hover {
+      background: #f9f9f9;
+    }
+
+    .notification-item.unread {
+      background: #f0f7ff;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main-content.active {
+        margin-left: 0;
+      }
+
+      #sidebar {
+        width: 100%;
+        left: -100%;
+      }
+    }
+
+    /* Compact styling for quick actions */
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+
+    .welcome-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .welcome-section h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-section p {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      border-radius: 5px;
+      padding: 0.4rem 1rem;
+    }
+
+    .fa-2x {
+      font-size: 1.5rem;
+    }
+
+    h5 {
+      font-size: 1rem;
+      margin: 0.5rem 0;
+    }
+
+    /* Dashboard Cards and Charts Styles */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .stat-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-item h4 {
+      color: #6c757d;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+
+    .stat-number {
+      color: #003580;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .recent-applications {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .application-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .application-item:last-child {
+      border-bottom: none;
+    }
+
+    .application-info h4 {
+      margin: 0;
+      font-size: 1rem;
+      color: #003580;
+    }
+
+    .application-info p {
+      margin: 5px 0;
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .status.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status.approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status.rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .application-date {
+      color: #6c757d;
+      font-size: 0.8rem;
+    }
+
+    canvas {
+      max-height: 300px;
+      width: 100% !important;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <a href="pensioner_dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="pension_application.html"><i class="fas fa-file-alt"></i> Applications</a>
+    <a href="track_application.html"><i class="fas fa-search"></i> Track Application</a>
+    <a href="pension_payments.html"><i class="fas fa-money-bill"></i> Payments</a>
+    <a href="pensioner_notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+    <a href="pensioner_support.html"><i class="fas fa-headset"></i> Support</a>
+    <a href="pensioner_settings.html"><i class="fas fa-cog"></i> Settings</a>
+    <a href="pensioner_logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+
+  <div class="main-content">
+    <div class="top-bar">
+      <button class="sidebar-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="notification-toggle" onclick="toggleNotifications()">
+        <i class="fas fa-bell"></i>
+        <span class="badge">3</span>
+      </div>
+    </div>
+
+    <div class="welcome-section">
+      <h1>Welcome, <span id="userName">John Doe</span></h1>
+      <p>Pension ID: <span id="pensionId">PEN123456</span></p>
+      <div class="quick-actions">
+        <button class="action-button" onclick="window.location.href='track_application.html'">
+          <i class="fas fa-search"></i> Track Application
+        </button>
+        <button class="action-button" onclick="window.location.href='pension_application.html'">
+          <i class="fas fa-file-alt"></i> New Application
+        </button>
+        <button class="action-button" onclick="window.location.href='pension_payments.html'">
+          <i class="fas fa-money-bill"></i> View Payments
+        </button>
+        <button class="action-button" onclick="window.location.href='pensioner_support.html'">
+          <i class="fas fa-headset"></i> Support
+        </button>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <div class="card-header">
+          <i class="fas fa-file-alt"></i>
+          <h3 class="card-title">Recent Applications</h3>
+        </div>
+        <div class="card-content" id="recentApplications">
+          <div class="application-item">
+            <p class="app-title">Retirement Pension</p>
+            <p class="app-status pending">Pending</p>
+            <p class="app-date">Submitted: Dec 25, 2023</p>
+            <button class="btn btn-sm btn-primary" onclick="window.location.href='track_application.html?id=APP001'">
+              Track
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-header">
+          <i class="fas fa-money-bill"></i>
+          <h3 class="card-title">Recent Payments</h3>
+        </div>
+        <div class="card-content" id="recentPayments">
+          <div class="payment-item">
+            <p class="payment-amount">₹25,000</p>
+            <p class="payment-date">Received: Dec 1, 2023</p>
+            <button class="btn btn-sm btn-outline-primary"
+              onclick="window.location.href='pension_payments.html#payment001'">
+              Details
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-header">
+          <i class="fas fa-bell"></i>
+          <h3 class="card-title">Notifications</h3>
+        </div>
+        <div class="card-content" id="dashboardNotifications">
+          <div class="notification-item unread">
+            <p class="notif-title">Application Update</p>
+            <p class="notif-text">
+              Your pension application has been reviewed
+            </p>
+            <p class="notif-time">2 hours ago</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-header">
+          <i class="fas fa-tasks"></i>
+          <h3 class="card-title">Quick Actions</h3>
+        </div>
+        <div class="card-content">
+          <button class="btn btn-outline-primary mb-2 w-100" onclick="window.location.href='pensioner_settings.html'">
+            <i class="fas fa-user-edit me-2"></i>Update Profile
+          </button>
+          <button class="btn btn-outline-primary mb-2 w-100" onclick="window.location.href='pensioner_support.html'">
+            <i class="fas fa-headset me-2"></i>Contact Support
+          </button>
+          <button class="btn btn-outline-primary mb-2 w-100" onclick="window.location.href='pensioner_settings.html'">
+            <i class="fas fa-cog me-2"></i>Settings
+          </button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="fas fa-bell me-2"></i>Weekly Alerts</h5>
+          <button class="btn btn-sm btn-outline-primary" onclick="toggleAlertPreferences()">
+            <i class="fas fa-cog"></i> Alert Settings
+          </button>
+        </div>
+        <div class="card-body">
+          <div id="alertsList">
+            <!-- Sample Alerts -->
+            <div class="alert alert-info alert-dismissible fade show">
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              <strong>Payment Alert:</strong> Your pension payment for
+              December 2023 has been processed.
+            </div>
+            <div class="alert alert-success alert-dismissible fade show">
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              <strong>Document Update:</strong> Your annual life certificate
+              is due next month.
+            </div>
+            <div class="alert alert-warning alert-dismissible fade show">
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              <strong>Reminder:</strong> Update your bank details if there are
+              any changes.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Panel -->
+  <div class="notification-panel" id="notificationPanel">
+    <div class="notification-header">
+      <h3 style="margin: 0">Notifications</h3>
+      <button onclick="toggleNotifications()" style="
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+          ">
+        ×
+      </button>
+    </div>
+    <ul class="notification-list">
+      <li class="notification-item unread">
+        <strong>Document Update Required</strong>
+        <p>Please upload your updated income certificate.</p>
+        <small>2 hours ago</small>
+      </li>
+      <li class="notification-item unread">
+        <strong>Payment Processed</strong>
+        <p>Your pension payment for December has been processed.</p>
+        <small>1 day ago</small>
+      </li>
+      <li class="notification-item unread">
+        <strong>Application Update</strong>
+        <p>Your application #APP123456 is under review.</p>
+        <small>2 days ago</small>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Alert Preferences Modal -->
+  <div class="modal fade" id="alertPreferencesModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Alert Preferences</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="alertPreferencesForm">
+            <div class="mb-3">
+              <label class="form-label">Alert Frequency</label>
+              <select class="form-select" name="alertFrequency">
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Alert Types</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="paymentAlerts" checked />
+                <label class="form-check-label" for="paymentAlerts">Payment Alerts</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="documentAlerts" checked />
+                <label class="form-check-label" for="documentAlerts">Document Updates</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="statusAlerts" checked />
+                <label class="form-check-label" for="statusAlerts">Application Status</label>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Notification Method</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="emailNotif" checked />
+                <label class="form-check-label" for="emailNotif">Email</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="smsNotif" checked />
+                <label class="form-check-label" for="smsNotif">SMS</label>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="saveAlertPreferences()">
+            Save Preferences
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    function toggleSidebar() {
+      document.querySelector("#sidebar").classList.toggle("active");
+      document.querySelector(".main-content").classList.toggle("active");
+    }
+
+    function toggleNotifications() {
+      document.getElementById("notificationPanel").classList.toggle("active");
+    }
+
+    // Auto-toggle sidebar on page load
+    document.addEventListener("DOMContentLoaded", function () {
+      toggleSidebar();
+      loadUserData();
+    });
+
+    function loadUserData() {
+      // This would typically fetch from an API
+      // For now using mock data
+      document.getElementById("userName").textContent =
+        localStorage.getItem("name") || "";
+      document.getElementById("pensionId").textContent =
+        localStorage.getItem("id") || "";
+    }
+
+    function markNotificationRead(element) {
+      element.classList.remove("unread");
+      updateNotificationCount();
+    }
+
+    function updateNotificationCount() {
+      const unreadCount = document.querySelectorAll(
+        ".notification-item.unread"
+      ).length;
+      const badge = document.querySelector(".notification-toggle .badge");
+      badge.textContent = unreadCount;
+      if (unreadCount === 0) {
+        badge.style.display = "none";
+      }
+    }
+
+    function toggleAlertPreferences() {
+      const modal = new bootstrap.Modal(
+        document.getElementById("alertPreferencesModal")
+      );
+      modal.show();
+    }
+
+    function saveAlertPreferences() {
+      // Get form values
+      const frequency = document.querySelector(
+        'select[name="alertFrequency"]'
+      ).value;
+      const paymentAlerts = document.getElementById("paymentAlerts").checked;
+      const documentAlerts =
+        document.getElementById("documentAlerts").checked;
+      const statusAlerts = document.getElementById("statusAlerts").checked;
+      const emailNotif = document.getElementById("emailNotif").checked;
+      const smsNotif = document.getElementById("smsNotif").checked;
+
+      // Save preferences (you can implement actual saving logic)
+      const preferences = {
+        frequency,
+        alerts: {
+          payment: paymentAlerts,
+          document: documentAlerts,
+          status: statusAlerts,
+        },
+        notifications: {
+          email: emailNotif,
+          sms: smsNotif,
+        },
+      };
+
+      // Show success message
+      const alertsList = document.getElementById("alertsList");
+      const successAlert = document.createElement("div");
+      successAlert.className =
+        "alert alert-success alert-dismissible fade show";
+      successAlert.innerHTML = `
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <strong>Success!</strong> Your alert preferences have been saved.
+            `;
+      alertsList.insertBefore(successAlert, alertsList.firstChild);
+
+      // Close modal
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("alertPreferencesModal")
+      );
+      modal.hide();
+    }
+
+    // Load dashboard data
+    async function loadDashboardData() {
+      try {
+        // Fetch application statistics
+        // const stats = await fetch("/api/applications/stats").then((res) =>
+        //   res.json()
+        // );
+        // updateStatistics(stats);
+        const pensionId = localStorage.getItem('id')
+        
+        const response = await fetch(`http://localhost:8080/api/pensioner/recent-application/${pensionId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          // Update the table with the fetched application
+          updateRecentApplications([data]);
+        } else if (response.status === 201) {
+          // Handle no records found
+          alert(data); // "No records found"
+          clearRecentApplicationsTable();
+        } else {
+          // Handle other cases
+          console.error("Failed to fetch recent application:", data);
+          alert("An error occurred: " + data);
+        }
+
+        // Fetch pension type distribution
+        const distribution = await fetch(
+          "/api/applications/distribution"
+        ).then((res) => res.json());
+        updatePensionTypeChart(distribution);
+
+        // Fetch monthly disbursement
+        const disbursement = await fetch("/api/disbursement/monthly").then(
+          (res) => res.json()
+        );
+        updateDisbursementTable(disbursement);
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      }
+    }
+
+    // Update statistics counters
+    function updateStatistics(stats) {
+      document.getElementById("pendingCount").textContent = stats.pending;
+      document.getElementById("approvedCount").textContent = stats.approved;
+      document.getElementById("rejectedCount").textContent = stats.rejected;
+      document.getElementById("totalCount").textContent = stats.total;
+    }
+
+    // Update recent applications table
+    // function updateRecentApplications(applications) {
+    //   const tbody = document.getElementById("recentApplicationsTable");
+    //   tbody.innerHTML = "";
+
+    //   applications.forEach((app) => {
+    //     const tr = document.createElement("tr");
+    //     tr.innerHTML = `
+    //                 <td>${app.id}</td>
+    //                 <td>${app.applicantName}</td>
+    //                 <td>${formatPensionType(app.pensionType)}</td>
+    //                 <td>₹${app.amount.toFixed(2)}</td>
+    //                 <td><span class="badge bg-${getStatusBadgeColor(
+    //       app.status
+    //     )}">${app.status}</span></td>
+    //                 <td>
+    //                     <button class="btn btn-sm btn-primary" onclick="openReviewModal('${app.id
+    //       }')">
+    //                         Review
+    //                     </button>
+    //                 </td>
+    //             `;
+    //     tbody.appendChild(tr);
+    //   });
+    // }
+
+    function updateRecentApplications(applications) {
+      const tbody = document.getElementById("recentApplications");
+      tbody.innerHTML = "";
+      console.log(applications);
+      
+      applications.forEach((app) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+      <td>${app.pensionerId}</td>
+      <td>${app.pensionCategory}</td>
+      <td>${app.status}</td>
+      <td>₹${app.pensionAmount}</td>
+      <td><span class="badge bg-${getStatusBadgeColor(app.status)}">${app.status}</span></td> 
+      <td>
+        <button class="btn btn-sm btn-primary" onclick="window.location.href='track_application.html?id=${app.pensionerId}'">
+          Track
+        </button>
+      </td>
+    `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function clearRecentApplicationsTable() {
+      const tbody = document.getElementById("recentApplicationsTable");
+      tbody.innerHTML = '<tr><td colspan="6">No recent applications found.</td></tr>';
+    }
+
+    // Update pension type distribution chart
+    function updatePensionTypeChart(distribution) {
+      const ctx = document
+        .getElementById("pensionTypeChart")
+        .getContext("2d");
+      new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: distribution.map((d) => formatPensionType(d.type)),
+          datasets: [
+            {
+              data: distribution.map((d) => d.count),
+              backgroundColor: [
+                "#FF6384",
+                "#36A2EB",
+                "#FFCE56",
+                "#4BC0C0",
+                "#9966FF",
+                "#FF9F40",
+                "#FF6384",
+                "#36A2EB",
+                "#FFCE56",
+                "#4BC0C0",
+              ],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "right",
+            },
+          },
+        },
+      });
+    }
+
+    // Update monthly disbursement table
+    function updateDisbursementTable(disbursement) {
+      const tbody = document.getElementById("disbursementTable");
+      tbody.innerHTML = "";
+
+      disbursement.forEach((item) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+                    <td>${formatPensionType(item.pensionType)}</td>
+                    <td>${item.beneficiaryCount}</td>
+                    <td>₹${item.amountPerPerson.toFixed(2)}</td>
+                    <td>₹${item.totalAmount.toFixed(2)}</td>
+                `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Format pension type for display
+    function formatPensionType(type) {
+      return type
+        .split("_")
+        .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+        .join(" ");
+    }
+
+    // Get badge color based on status
+    function getStatusBadgeColor(status) {
+      switch (status) {
+        case "APPROVED":
+          return "success";
+        case "REJECTED":
+          return "danger";
+        case "PENDING_CLARIFICATION":
+          return "warning";
+        default:
+          return "secondary";
+      }
+    }
+
+    // Open review modal
+    async function openReviewModal(pensionId) {
+      // try {
+      //   const application = await fetch(
+      //     `http://localhost:8080/api/pensioner/recent-application/${pensionId}`
+      //   ).then((res) => res.json());
+      //   console.log(application);
+        
+      //   // Update modal fields
+      //   document.getElementById("reviewName").textContent =
+      //     application.fullName;
+      //   document.getElementById("reviewAge").textContent = application.dob;
+      //   document.getElementById("reviewAadhar").textContent =
+      //     application.aadhar;
+      //   document.getElementById("reviewPensionType").textContent =
+      //     formatPensionType(application.pensionCategory);
+      //   document.getElementById(
+      //     "reviewAmount"
+      //   ).textContent = `₹${application.pensionAmount}`;
+      //   document.getElementById("reviewDate").textContent = 
+      //     application.appliedDate;
+
+      //   // Load document previews
+      //   document.getElementById("aadharPreview").src =
+      //     application.rationCard;
+      //   document.getElementById("photoPreview").src = application.photo;
+
+      //   // Store application ID for review submission
+      //   document.getElementById("reviewModal").dataset.applicationId =
+      //     applicationId;
+
+      //   // Show modal
+      //   new bootstrap.Modal(document.getElementById("reviewModal")).show();
+      // } catch (error) {
+      //   console.error("Error loading application details:", error);
+      //   alert("Failed to load application details");
+      // }
+      window.location.href = ""
+    }
+
+    // Submit application review
+    async function submitReview() {
+      const applicationId =
+        document.getElementById("reviewModal").dataset.applicationId;
+      const status = document.getElementById("reviewStatus").value;
+      const comments = document.getElementById("reviewComments").value;
+
+      try {
+        const response = await fetch(
+          `/api/applications/${applicationId}/review`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              status,
+              comments,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          // Close modal and reload dashboard data
+          bootstrap.Modal.getInstance(
+            document.getElementById("reviewModal")
+          ).hide();
+          loadDashboardData();
+          alert("Review submitted successfully");
+        } else {
+          throw new Error("Failed to submit review");
+        }
+      } catch (error) {
+        console.error("Error submitting review:", error);
+        alert("Failed to submit review");
+      }
+    }
+
+    // Initialize dashboard
+    document.addEventListener("DOMContentLoaded", function () {
+      loadDashboardData();
+      // Refresh dashboard data every 5 minutes
+      setInterval(loadDashboardData, 5 * 60 * 1000);
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pension Application</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Arial", sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      padding: 0 15%;
+    }
+
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      margin-top: 50px;
+      transition: all 0.3s ease;
+    }
+
+    .container:hover {
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 30px;
+      margin-bottom: 20px;
+      color: #0056b3;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccd6eb;
+      border-radius: 8px;
+      font-size: 16px;
+      background-color: #f9f9fc;
+      transition: all 0.3s ease;
+    }
+
+    input[type="file"] {
+      font-size: 14px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #0056b3;
+      background-color: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      height: 100px;
+    }
+
+    button {
+      padding: 14px 25px;
+      background-color: #0056b3;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #004494;
+    }
+
+    .form-section {
+      margin-bottom: 25px;
+    }
+
+    .form-section h2 {
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .declaration {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .declaration input[type="checkbox"] {
+      margin-right: 12px;
+      width: 18px;
+      height: 18px;
+      vertical-align: middle;
+    }
+
+    .declaration label {
+      font-size: 16px;
+      color: #333;
+      display: inline-block;
+    }
+
+    .documents-list label {
+      margin-bottom: 5px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    #firstTimeDocs {
+      display: none;
+    }
+
+    #documentsSection {
+      display: none;
+      margin-top: 20px;
+    }
+
+    select,
+    button,
+    input[type="file"] {
+      font-size: 16px;
+    }
+
+    /* Modal Popup Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding-top: 100px;
+    }
+
+    .modal-content {
+      background-color: #ffffff;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #0056b3;
+    }
+
+    .modal-body {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .modal-footer {
+      text-align: center;
+    }
+
+    .modal button {
+      background-color: #0056b3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .modal button:hover {
+      background-color: #004494;
+    }
+
+    /* Flexbox Styling for Name and Photo fields */
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-row .form-section {
+      flex: 1;
+      margin-right: 20px;
+    }
+
+    .form-row .form-section:last-child {
+      margin-right: 0;
+    }
+
+    .photo-upload-container {
+      flex: 0.5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .photo-upload-container input[type="file"] {
+      padding: 10px;
+    }
+  </style>
+
+  <script>
+    function validateAdharNumber(input) {
+    const adhartError = document.getElementById("adhartError");
+    input.value = input.value.replace(/\D/g, ''); // Remove non-numeric characters
+
+    if (input.value.length !== 10) {
+      adhartError.style.display = "inline";
+    } else {
+      adhartError.style.display = "none";
+    }
+  }
+  function validateAccNumber(input) {
+    const AccError = document.getElementById("AccError");
+    input.value = input.value.replace(/\D/g, ''); // Remove non-numeric characters
+
+    if (input.value.length !== 15) {
+      AccError.style.display = "inline";
+    } else {
+      AccError.style.display = "none";
+    }
+  }
+  function validateIFSCNumber(input) {
+    const ifscError = document.getElementById("ifscError");
+    input.value = input.value.replace(/\D/g, ''); // Remove non-numeric characters
+
+    if (input.value.length !== 11) {
+      ifscError.style.display = "inline";
+    } else {
+      ifscError.style.display = "none";
+    }
+  }
+    function calculateAge(dob) {
+    const today = new Date();
+    const birthDate = new Date(dob);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const month = today.getMonth();
+    const day = today.getDate();
+    if (month < birthDate.getMonth() || (month === birthDate.getMonth() && day < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  }
+  function validateContactNumber(input) {
+    const contactError = document.getElementById("contactError");
+    input.value = input.value.replace(/\D/g, ''); // Remove non-numeric characters
+
+    if (input.value.length !== 10) {
+      contactError.style.display = "inline";
+    } else {
+      contactError.style.display = "none";
+    }
+  }
+    function toggleFormFields() {
+      const applicantType = document.getElementById("applicantType").value;
+      const applicantInfo = document.getElementById("applicantInfo");
+      const firstTimeDocs = document.getElementById("firstTimeDocs");
+      const aadharSection = document.getElementById("aadharSection");
+
+      if (applicantType === "firstTime") {
+        applicantInfo.style.display = "block";
+        firstTimeDocs.style.display = "block";
+        aadharSection.style.display = "block";
+      } else if (applicantType === "alreadyApplied") {
+        applicantInfo.style.display = "none";
+        firstTimeDocs.style.display = "none";
+        aadharSection.style.display = "block";
+      }
+    }
+    function toggleMaritalFields() {
+  const maritalStatus = document.getElementById("maritalStatus").value;
+  const spouseNameSection = document.getElementById("spouseNameSection");
+  const parentNameSection = document.getElementById("parentNameSection");
+
+  if (maritalStatus === "married") {
+    spouseNameSection.style.display = "block";
+    parentNameSection.style.display = "none";
+  } else {
+    spouseNameSection.style.display = "none";
+    parentNameSection.style.display = "block";
+  }
+}
+
+    function showDocumentFields() {
+      const pensionCategory =
+        document.getElementById("pensionCategory").value;
+      const documentsSection = document.getElementById("documentsSection");
+
+      if (pensionCategory) {
+        documentsSection.style.display = "block";
+      } else {
+        documentsSection.style.display = "none";
+      }
+    }
+
+    async function submitApplication(event) {
+      event.preventDefault(); // Prevent the default form submission
+      const dob1 = document.getElementById("pensioner-dob").value;
+      const age = calculateAge(dob1);
+      let ageValid = true;
+      
+      // Get all form values
+      const applicantType = document.getElementById("applicantType").value;
+      const fullName = document.getElementById("fullName").value;
+      const photo = document.getElementById("photo").files[0]; // Handle photo as a file
+      const dob = document.getElementById("pensioner-dob");
+      const gender = document.getElementById("gender").value;
+      const maritalStatus = document.getElementById("maritalStatus").value;
+      const spouseName = document.getElementById("spouseName").value;
+      const parentName = document.getElementById("parentName").value;
+      const contact = document.getElementById("contact").value;
+      const email = document.getElementById("email").value;
+      const address = document.getElementById("address").value;
+      const designation = document.getElementById("designation").value;
+      const aadhar = document.getElementById("aadhar").value;
+      const rationCard = document.getElementById("rationCard").files[0]; // Handle ration card as a file
+      const casteCertificate = document.getElementById("casteCertificate").files[0]; // Handle caste certificate as a file
+      const pensionCategory = document.getElementById("pensionCategory").value;
+      const pensionerId = localStorage.getItem("id"); // Get pensioner ID from localStorage
+      if (pensionCategory === "oldAge" && age < 60) {
+      ageValid = false;
+      alert("You must be 60 years or older for Old Age Pension.");
+    } else if (pensionCategory === "weaver" && age < 50) {
+      ageValid = false;
+      alert("You must be 50 years or older for Weaver Pension.");
+    } else if ((pensionCategory === "fishermen" || pensionCategory === 'toddyTappers') && age < 50) {
+      ageValid = false;
+      alert("You must be 50 years or older for Fishermen Pension.");
+    }
+    else if (pensionCategory === "art" && age < 40) {
+      ageValid = false;
+      alert("You must be 50 years or older for ART Pension (PLHIV).");
+    } else if (pensionCategory === "widow" && age < 30) {
+      ageValid = false;
+      alert("You must be 30 years or older for Widow Pension.");
+    }else{
+      ageValid = true;
+    }
+      // Create a FormData object to include files
+      const formData = new FormData();
+      formData.append("applicantType", applicantType);
+      formData.append("fullName", fullName);
+      formData.append("photo", photo); // Add the photo
+      formData.append("dob", dob);
+      formData.append("gender", gender);
+      formData.append("maritalStatus", maritalStatus);
+      formData.append("spouseName", spouseName);
+      formData.append("parentName", parentName);
+      formData.append("contact", contact);
+      formData.append("email", email);
+      formData.append("address", address);
+      formData.append("designation", designation);
+      formData.append("aadhar", aadhar);
+      formData.append("rationCard", rationCard); // Add the ration card file
+      formData.append("casteCertificate", casteCertificate); // Add the caste certificate file
+      formData.append("pensionCategory", pensionCategory);
+      formData.append("pensionerId", pensionerId); // Include pensionerId
+
+
+      // Prepare the API endpoint
+      const apiEndpoint = "http://localhost:8080/api/pensioner/submit-application"; // Replace with your API endpoint
+
+      try {
+        if(ageValid){
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result) {
+          alert("Application submitted successfully.");
+          // Redirect or take appropriate action after successful submission
+          window.location.href = "/pensioner_dashboard.html"; // Example redirect to a confirmation page
+        } else {
+          alert("Failed to submit the application. Please try again.");
+        }}
+      } catch (error) {
+        console.error("Error submitting the application:", error);
+        alert("An error occurred. Please try again later.");
+      }
+    };
+    
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Pension Application Form</h1>
+    <form id="pensionForm" onsubmit="return submitApplication(event)">
+      <div class="form-section">
+        <label for="applicantType">Select Application Type:</label>
+        <select id="applicantType" name="applicantType" onchange="toggleFormFields()">
+          <option value="firstTime">First-Time Applicant</option>
+          <option value="alreadyApplied">Already Applied</option>
+        </select>
+      </div>
+
+      <!-- Applicant Information Section -->
+      <div id="applicantInfo" style="display: block">
+        <div class="form-row">
+          <div class="form-section">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" required />
+          </div>
+          <div class="photo-upload-container">
+            <label for="photo">Upload Photo:</label>
+            <input type="file" id="photo" name="photo" accept="image/*" />
+          </div>
+        </div>
+        <div class="form-section">
+          <label for="pensionCategory">Pension Category:</label>
+          <select id="pensionCategory" name="pensionCategory" onchange="showDocumentFields()" required>
+            <option value="oldAge">Old Age (60+)</option>
+            <option value="disabled">Disabled</option>
+            <option value="weaver">Weaver</option>
+            <option value="toddyTappers">Toddy Tappers</option>
+            <option value="fishermen">Fishermen</option>
+            <option value="art">ART Pension (PLHIV)</option>
+            <option value="dialysis">Dialysis Pension (CKDU)</option>
+            <option value="widow">Widow
+              </option>
+          </select>
+        </div>
+  
+        <div class="mb-3">
+          <label for="pensioner-dob" class="form-label">Date of Birth</label>
+          <input type="date" class="form-control" id="pensioner-dob" required />
+          <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            let dobInput = document.getElementById("pensioner-dob");
+        
+            let today = new Date();
+            let minDate = new Date(today.getFullYear())
+            //, today.getMonth(),today.getDate());
+            const maxDate = new Date();
+            maxDate.setFullYear(minDate)
+            /*if(maxDate>minDate)
+            {
+              maxDate.setDate(minDate.getDate())
+            }*/
+            dobInput.max = maxDate.toISOString().split("T")[0];
+        
+            dobInput.addEventListener("input", function () {
+              if (new Date(this.value) > maxDate) {
+                this.classList.add("is-invalid");
+              } else {
+                this.classList.remove("is-invalid");
+              }})
+            })
+          </script>
+        </div>
+
+        <div class="form-section">
+          <label for="gender">Gender:</label>
+          <select id="gender" name="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="transgender">Transgender</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <label for="maritalStatus">Marital Status:</label>
+          <select id="maritalStatus" name="maritalStatus" onchange="toggleMaritalFields()" required>
+            <option value="unmarried">Unmarried</option>
+            <option value="married">Married</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <label for="Bank Account Number">Bank Account Number:</label>
+          <input type="tel" id="Bank Account Number" name="Bank Account Number" required  minlength="15" oninput="validateAdharNumber(this)"
+          maxlength="15" 
+          pattern="[0-9]{15}"/>
+          <small id="AccError" style="color: red; display: none;">Enter a valid Accountnumber.</small>
+        </div>
+       
+        <div class="form-section">
+          <label for="IFSC Code"> IFSC Code:</label>
+          <input type="tel" id="IFSC Code" name="IFSC Code" required  minlength="11" oninput="validateIFSCNumber(this)"
+          maxlength="11" 
+          pattern="[0-9]{11}"/>
+          <small id="ifscError" style="color: red; display: none;">Enter IFSC number.</small>
+        </div>
+
+
+        <!-- Spouse/Parent Name -->
+        <div class="form-section" id="spouseNameSection" style="display: none">
+          <label for="spouseName">Spouse Name:</label>
+          <input type="text" id="spouseName" name="spouseName" />
+        </div>
+
+        <div class="form-section" id="parentNameSection" style="display: none">
+          <label for="parentName">Parent/Guardian Name:</label>
+          <input type="text" id="parentName" name="parentName" />
+        </div>
+
+        <div class="form-section">
+          <label for="contact">Contact Number:</label>
+          <input type="tel" id="contact" name="contact" required  minlength="10" oninput="validateContactNumber(this)"
+          maxlength="10" 
+          pattern="[0-9]{10}"/>
+          <small id="contactError" style="color: red; display: none;">Enter a valid 10-digit contact number.</small>
+        </div>
+
+        <div class="form-section">
+          <label for="email">Email Address:</label>
+          <input type="email" id="email" name="email" />
+        </div>
+
+        <div class="form-section">
+          <label for="address">Residential Address:</label>
+          <textarea id="address" name="address" required></textarea>
+        </div>
+
+        <div class="form-section">
+          <label for="designation">Designation (if applicable):</label>
+          <input type="text" id="designation" name="designation" />
+        </div>
+      </div>
+
+      <!-- Mandatory Documents Section -->
+      <div class="form-section" id="aadharSection">
+        <label for="aadhar">Aadhar Card Number (Mandatory):</label>
+        <input type="text" id="aadhar" name="aadhar" required  minlength="12" oninput="validateAdharNumber(this)"
+        maxlength="12" 
+        pattern="[0-9]{12}"/>
+        <small id="adhartError" style="color: red; display: none;">Enter a valid Aadharnumber.</small>
+        
+      </div>
+
+      <!-- Additional Documents for First-Time Applicants -->
+      <div id="firstTimeDocs" style="display: block">
+        <div class="form-section">
+          <label for="rationCard">Ration Card (Mandatory):</label>
+          <input type="file" id="rationCard" name="rationCard" required  />
+        </div>
+
+        <div class="form-section">
+          <label for="casteCertificate">Caste Certificate (if applicable, Mandatory):</label>
+          <input type="file" id="casteCertificate" name="casteCertificate" required />
+        </div>
+      </div>
+
+      <!-- Pension Category -->
+
+      <div id="documentsSection"></div>
+
+      <button type="submit">Submit Application</button>
+    </form>
+  </div>
+</body>
+
+</html>

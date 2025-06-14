@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - E-Pension System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #004aad;
+      --secondary-color: #00a859;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #004aad, #00a859);
+      color: white;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      padding: 40px 0;
+    }
+
+    .register-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      color: #333;
+    }
+
+    .logo-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo-section img {
+      height: 80px;
+      margin-bottom: 15px;
+    }
+
+    .logo-section h1 {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .logo-section p {
+      color: #666;
+      margin-top: 5px;
+      font-size: 1rem;
+    }
+
+    .role-selection {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .role-selection button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .role-selection button:hover {
+      background: #003580;
+      transform: scale(1.05);
+    }
+
+    .role-selection button.active {
+      background: var(--secondary-color);
+      font-weight: bold;
+    }
+
+    form {
+      margin: 20px 0;
+      text-align: left;
+      max-width: 400px;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .form-control {
+      border-radius: 20px;
+      padding: 10px 15px;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(0, 74, 173, 0.25);
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      border: none;
+      padding: 12px 30px;
+      font-weight: 500;
+      width: 100%;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: #003580;
+      transform: scale(1.02);
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+
+    .footer a {
+      color: var(--primary-color);
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Added smaller button style */
+    .smaller-btn {
+      font-size: 0.85rem;
+      padding: 8px 20px;
+      border-radius: 20px;
+    }
+
+    @media (max-width: 576px) {
+      .role-selection {
+        flex-direction: column;
+      }
+
+      .role-selection button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="register-container">
+      <div class="logo-section">
+        <img src="/html/images/ap.png" alt="Government Logo" />
+        <h1>E-Pension System</h1>
+        <p>User Registration</p>
+      </div>
+
+      <div class="role-selection">
+        <button id="adminButton" class="role-btn">Admin</button>
+        <button id="pensionerButton" class="role-btn">Pensioner</button>
+      </div>
+
+      <!-- Admin Registration Form -->
+      <form id="admin-form" class="step-section">
+        <h4>Admin Registration</h4>
+        <!-- Step 1 -->
+        <div id="admin-step-1">
+          <div class="mb-3">
+            <label for="admin-fullname" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="admin-fullname" placeholder="Enter your full name" required />
+          </div>
+          <div class="mb-3">
+            <label for="admin-id" class="form-label">Admin ID</label>
+            <input type="text" class="form-control" id="admin-id" placeholder="Enter your Admin ID" required />
+          </div>
+          <div class="mb-3">
+            <label for="admin-phone" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="admin-phone" placeholder="Enter your phone number" required
+              pattern="\d{10}" maxlength="10" minlength="10"/>
+          </div>
+          <div class="mb-3">
+            <label for="admin-email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="admin-email" placeholder="Enter your email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required/>
+          </div>
+          <button type="button" id="admin-generate-otp" class="btn btn-primary">Generate OTP</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="admin-step-2" class="mt-3">
+          <div class="mb-3">
+            <label for="admin-otp" class="form-label">Enter OTP</label>
+            <input type="text" class="form-control" id="admin-otp" placeholder="Enter OTP" required />
+          </div>
+          <button type="button" id="admin-verify-otp" class="btn btn-primary">Verify OTP</button>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="admin-step-3" class="mt-3">
+          <div class="mb-3">
+            <label for="admin-username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="admin-username" placeholder="Enter your username" required />
+          </div>
+          <div class="mb-3">
+            <label for="admin-password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="admin-password" placeholder="Enter your password"
+              required />
+          </div>
+          <div class="mb-3">
+            <label for="admin-confirm-password" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="admin-confirm-password" placeholder="Confirm your password"
+              required />
+          </div>
+          <button type="button" id="admin-register" class="btn btn-success">Register as Admin</button>
+        </div>
+      </form>
+
+      <!-- Pensioner Registration Form -->
+      <form id="pensioner-form" class="step-section">
+        <h4>Pensioner Registration</h4>
+        <!-- Step 1 -->
+        <div id="pensioner-step-1">
+          <div class="mb-3">
+            <label for="pensioner-fullname" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="pensioner-fullname" placeholder="Enter your full name"
+              required />
+          </div>
+          
+          <div class="mb-3">
+            <label for="pensioner-phone" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="pensioner-phone" placeholder="Enter your phone number" required
+              pattern="\d{10}" maxlength="10"  />
+          </div>
+          <div class="mb-3">
+            <label for="pensioner-email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="pensioner-email" placeholder="Enter your email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required />
+          </div>
+          <button type="button" id="pensioner-generate-otp" class="btn btn-primary">Generate OTP</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="pensioner-step-2" class="mt-3">
+          <div class="mb-3">
+            <label for="pensioner-otp" class="form-label">Enter OTP</label>
+            <input type="text" class="form-control" id="pensioner-otp" placeholder="Enter OTP" required />
+          </div>
+          <button type="button" id="pensioner-verify-otp" class="btn btn-primary">Verify OTP</button>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="pensioner-step-3" class="mt-3">
+          <div class="mb-3">
+            <label for="pensioner-username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="pensioner-username" placeholder="Enter your username"
+              required />
+          </div>
+          <div class="mb-3">
+            <label for="pensioner-password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="pensioner-password" placeholder="Enter your password"
+              required />
+          </div>
+          <div class="mb-3">
+            <label for="pensioner-confirm-password" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="pensioner-confirm-password"
+              placeholder="Confirm your password" required />
+          </div>
+          <button type="button" id="pensioner-register" class="btn btn-success">
+            Register as Pensioner
+          </button>
+        </div>
+      </form>
+
+      <p class="footer">
+        Already have an account? <a href="login.html">Login</a>
+      </p>
+    </div>
+  </div>
+
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    let dobInput = document.getElementById("pensioner-dob");
+
+    let today = new Date();
+    let minDate = new Date(today.getFullYear())
+    //, today.getMonth(),today.getDate());
+    const maxDate = new Date();
+    maxDate.setFullYear(minDate)
+    /*if(maxDate>minDate)
+    {
+      maxDate.setDate(minDate.getDate())
+    }*/
+    dobInput.max = maxDate.toISOString().split("T")[0];
+
+    dobInput.addEventListener("input", function () {
+      if (new Date(this.value) > maxDate) {
+        this.classList.add("is-invalid");
+      } else {
+        this.classList.remove("is-invalid");
+      }})
+    })
+
+    // Buttons and Forms
+    const adminButton = document.getElementById("adminButton");
+    const pensionerButton = document.getElementById("pensionerButton");
+    const adminForm = document.getElementById("admin-form");
+    const pensionerForm = document.getElementById("pensioner-form");
+
+    // Admin Steps
+    const adminStep1 = document.getElementById("admin-step-1");
+    const adminStep2 = document.getElementById("admin-step-2");
+    const adminStep3 = document.getElementById("admin-step-3");
+    const adminGenerateOtp = document.getElementById("admin-generate-otp");
+    const adminVerifyOtp = document.getElementById("admin-verify-otp");
+    const adminRegister = document.getElementById("admin-register");
+
+    // Pensioner Steps
+    const pensionerStep1 = document.getElementById("pensioner-step-1");
+    const pensionerStep2 = document.getElementById("pensioner-step-2");
+    const pensionerStep3 = document.getElementById("pensioner-step-3");
+    const pensionerGenerateOtp = document.getElementById("pensioner-generate-otp");
+    const pensionerVerifyOtp = document.getElementById("pensioner-verify-otp");
+    const pensionerRegister = document.getElementById("pensioner-register");
+
+    // Toggle between Admin and Pensioner forms
+    adminButton.addEventListener("click", () => {
+      adminForm.style.display = "block";
+      pensionerForm.style.display = "none";
+      adminButton.classList.add("active");
+      pensionerButton.classList.remove("active");
+    });
+
+    pensionerButton.addEventListener("click", () => {
+      pensionerForm.style.display = "block";
+      adminForm.style.display = "none";
+      pensionerButton.classList.add("active");
+      adminButton.classList.remove("active");
+    });
+
+    // Show and hide steps for Admin
+    adminGenerateOtp.addEventListener("click", async () => {
+      const email = document.getElementById("admin-email").value;
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      try {
+        // Call OTP generation API
+        const response = await fetch("http://localhost:8080/api/admin/generate-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }), // Send email as payload
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert("OTP sent successfully to your email.");
+          // adminStep1.style.display = "none";
+          adminStep2.style.display = "block";
+        } else {
+          alert("Failed to send OTP. Try again.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred. Please try again later.");
+      }
+    });
+
+    adminVerifyOtp.addEventListener("click", async () => {
+      const otp = document.getElementById("admin-otp").value;
+      const email = document.getElementById("admin-email").value;
+      if (!otp) {
+        alert("Please enter the OTP.");
+        return;
+      }
+
+      try {
+        // Call OTP verification API
+        const response = await fetch("http://localhost:8080/api/admin/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ otp,email }),
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert("OTP verified successfully.");
+          adminStep2.style.display = "none";
+          adminStep3.style.display = "block";
+        } else {
+          alert("Invalid OTP. Try again.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred. Please try again later.");
+      }
+    });
+
+    adminRegister.addEventListener("click", async () => {
+      const fullname = document.getElementById("admin-fullname").value;
+      const email = document.getElementById("admin-email").value;
+      const phone = document.getElementById("admin-phone").value;
+      const adminId = document.getElementById("admin-id").value;
+      const username = document.getElementById("admin-username").value;
+      const password = document.getElementById("admin-password").value;
+      const confirmPassword = document.getElementById("admin-confirm-password").value;
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      try {
+        // Call registration API
+        const response = await fetch("http://localhost:8080/api/admin/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullname,
+            email,
+            phone,
+            adminId,
+            username,
+            password
+          }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          alert("Admin registered successfully.");
+          window.location.href = "/login.html";
+        } else {
+          alert("Registration failed. Try again.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred. Please try again later.");
+      }
+    });
+
+    // Show and hide steps for Pensioner
+    pensionerGenerateOtp.addEventListener("click", async () => {
+      const email = document.getElementById("pensioner-email").value;
+
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      try {
+        // Call OTP generation API
+        const response = await fetch("http://localhost:8080/api/pensioner/generate-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }), // Send email as payload
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert("OTP sent successfully to your email.");
+          // pensionerStep1.style.display = "none";
+          pensionerStep2.style.display = "block";
+        } else {
+          alert("Failed to send OTP. Try again.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred. Please try again later.");
+      }
+    });
+
+    pensionerVerifyOtp.addEventListener("click", async () => {
+      const otp = document.getElementById("pensioner-otp").value;
+      const email = document.getElementById("pensioner-email").value;
+      if (!otp) {
+        alert("Please enter the OTP.");
+        return;
+      }
+
+      try {
+        // Call OTP verification API
+        const response = await fetch("http://localhost:8080/api/pensioner/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ otp,email }),
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert("OTP verified successfully.");
+          pensionerStep2.style.display = "none";
+          pensionerStep3.style.display = "block";
+        } else {
+          alert("Invalid OTP. Try again.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred. Please try again later.");
+      }
+    });
+
+    pensionerRegister.addEventListener("click", async () => {
+      const fullname = document.getElementById("pensioner-fullname").value;
+      const email = document.getElementById("pensioner-email").value;
+      const phone = document.getElementById("pensioner-phone").value;
+      const dob = document.getElementById("pensioner-dob").value;
+      const username = document.getElementById("pensioner-username").value;
+      const password = document.getElementById("pensioner-password").value;
+      const confirmPassword = document.getElementById("pensioner-confirm-password").value;
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      try {
+        // Call registration API
+      const pensionerId = '';
+        const response = await fetch("http://localhost:8080/api/pensioner/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullname,
+            email,
+            phone,
+            dob,
+            pensionerId,
+            username,
+            password
+          }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          alert("Pensioner registered successfully.");
+          window.location.href = "/login.html";
+        } else {
+          alert("Registration failed. Try again.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred. Please try again later.");
+      }
+    });
+    // adminForm.style.display = "none";
+    pensionerForm.style.display = "none";
+    pensionerStep2.style.display = "none";
+    pensionerStep3.style.display = "none";
+    adminStep2.style.display = "none";
+    adminStep3.style.display = "none";
+  </script>
+</body>
+
+</html>

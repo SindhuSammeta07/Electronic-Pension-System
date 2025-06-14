@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pension Payment History</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Arial", sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      padding: 0 15%;
+    }
+
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      margin-top: 50px;
+      transition: all 0.3s ease;
+    }
+
+    .container:hover {
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 30px;
+      margin-bottom: 20px;
+      color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #0056b3;
+      color: white;
+    }
+
+    td {
+      background-color: #f9f9fc;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    .status.approved {
+      color: #28a745;
+    }
+
+    .status.pending {
+      color: #ff9800;
+    }
+
+    .status.rejected {
+      color: #dc3545;
+    }
+
+    .btn {
+      background-color: #0056b3;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .btn:hover {
+      background-color: #004494;
+    }
+
+    .receipt-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .receipt {
+      font-size: 16px;
+      margin: 10px 0;
+      padding: 20px;
+      background-color: #f1f1f1;
+      border-radius: 8px;
+    }
+
+    .receipt-header {
+      font-size: 20px;
+      color: #0056b3;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .receipt-details {
+      font-size: 16px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Pension Payment History</h1>
+
+    <!-- Payment History Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Payment Date</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Receipt</th>
+        </tr>
+      </thead>
+      <tbody id="paymentHistoryTable">
+        <!-- Payment History Entries Will Be Added Here Dynamically -->
+      </tbody>
+    </table>
+
+    <!-- Receipt Section -->
+    <div id="receiptSection" class="receipt-section" style="display: none">
+      <div class="receipt-header">Payment Receipt</div>
+      <div id="receiptDetails" class="receipt-details"></div>
+      <button class="btn" onclick="printReceipt()">Print Receipt</button>
+    </div>
+  </div>
+
+  <script>
+    // Sample data for Payment History
+    const paymentHistory = [
+      {
+        date: "2024-12-15",
+        amount: "₹2,250",
+        status: "Approved",
+        paymentId: "PAY1234",
+      },
+      {
+        date: "2024-11-20",
+        amount: "₹2,250",
+        status: "Pending",
+        paymentId: "PAY1235",
+      },
+      {
+        date: "2024-10-10",
+        amount: "₹2,250",
+        status: "Rejected",
+        paymentId: "PAY1236",
+      },
+    ];
+
+    // Function to populate payment history
+    async function loadPaymentHistory() {
+      const paymentHistoryTable = document.getElementById(
+        "paymentHistoryTable"
+      );
+      paymentHistoryTable.innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
+
+      // paymentHistory.forEach((payment) => {
+      //   const row = document.createElement("tr");
+      //   row.innerHTML = `
+      //             <td>${payment.date}</td>
+      //             <td>${payment.amount}</td>
+      //             <td><span class="status ${getStatusClass(
+      //               payment.status
+      //             )}">${payment.status}</span></td>
+      //             <td><button class="btn" onclick="viewReceipt('${
+      //               payment.paymentId
+      //             }')">View Receipt</button></td>
+      //         `;
+      //   paymentHistoryTable.appendChild(row);
+      // });
+
+      try {
+        // Fetch payment history from the API
+        const response = await fetch(`http://localhost:8080/api/generate/${localStorage.getItem('id')}`, 
+        // {
+          // method: "GET",
+          // headers: {
+          //   "Content-Type": "application/json",
+          // },
+        // }
+      );
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch payment history");
+      }
+      
+      // Parse the response
+      const paymentHistory = await response.json();
+      console.log(response,paymentHistory);
+
+        // Populate the table with payment history
+        if (paymentHistory.length === 0) {
+          paymentHistoryTable.innerHTML =
+            "<tr><td colspan='4'>No payment history available</td></tr>";
+        } else {
+          paymentHistoryTable.innerHTML = "";
+          paymentHistory.forEach((payment) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+          <td>${payment.paymentDate}</td>
+          <td>${payment.amount}</td>
+          <td><span class="status ${getStatusClass(
+              payment.status
+            )}">${payment.status}</span></td>
+          <td><button class="btn" onclick="viewReceipt('${payment.id
+}')">View Receipt</button></td>
+        `;
+            paymentHistoryTable.appendChild(row);
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        paymentHistoryTable.innerHTML =
+          "<tr><td colspan='4'>Failed to load payment history</td></tr>";
+      }
+    }
+
+
+    // Function to return status class based on the payment status
+    function getStatusClass(status) {
+      if (status === "Approved") {
+        return "approved";
+      } else if (status === "Pending") {
+        return "pending";
+      } else if (status === "Rejected") {
+        return "rejected";
+      }
+      return "";
+    }
+
+    // Function to view the receipt for a particular payment
+    async function viewReceipt(payment) {
+      const response = await fetch(`http://localhost:8080/api/generate/${localStorage.getItem('id')}`)
+      const paymentHistory = await response.json();
+      console.log(paymentHistory,parseInt(payment));
+      
+      const pay = paymentHistory.find((p) => p.id === parseInt(payment));
+      // if (payment) {
+      //   const receiptDetails = document.getElementById("receiptDetails");
+      //   receiptDetails.innerHTML = `
+      //             <p><strong>Payment ID:</strong> ${payment.paymentId}</p>
+      //             <p><strong>Date:</strong> ${payment.date}</p>
+      //             <p><strong>Amount:</strong> ${payment.amount}</p>
+      //             <p><strong>Status:</strong> <span class="status ${getStatusClass(
+      //               payment.status
+      //             )}">${payment.status}</span></p>
+      //         `;
+      //   document.getElementById("receiptSection").style.display = "block";
+      // }
+      try {
+        // Fetch receipt details from the API
+        console.log(pay);
+        
+        // Display the receipt details
+        const receiptDetails = document.getElementById("receiptDetails");
+        receiptDetails.innerHTML = `
+      <p><strong>Payment ID:</strong> ${pay.id}</p>
+      <p><strong>Date:</strong> ${pay.paymentDate}</p>
+      <p><strong>Amount:</strong> ${pay.amount}</p>
+      <p><strong>Status:</strong> <span class="status ${getStatusClass(
+          pay.status
+        )}">${pay.status}</span></p>
+    `;
+        document.getElementById("receiptSection").style.display = "block";
+      } catch (error) {
+        console.error(error);
+        alert("Failed to fetch receipt details. Please try again later.");
+      }
+    }
+
+    // Function to print the receipt
+    function printReceipt() {
+      const receiptContent =
+        document.getElementById("receiptSection").innerHTML;
+      const printWindow = window.open("", "", "height=600,width=800");
+      printWindow.document.write(
+        "<><head><title>Payment Receipt</title></head><>"
+      );
+      printWindow.document.write(receiptContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+    window.onload = loadPaymentHistory;
+
+  </script>
+</body>
+
+</html>

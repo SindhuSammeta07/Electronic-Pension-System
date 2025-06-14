@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Support - Raise a Ticket</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4f8;
+        color: #333;
+        padding: 0 15%;
+      }
+
+      .container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        margin-top: 50px;
+        transition: all 0.3s ease;
+      }
+
+      .container:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 30px;
+        margin-bottom: 20px;
+        color: #0056b3;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #0056b3;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      select,
+      input[type="file"] {
+        cursor: pointer;
+      }
+
+      textarea {
+        height: 150px;
+        resize: vertical;
+      }
+
+      .btn {
+        background-color: #0056b3;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+      }
+
+      .btn:hover {
+        background-color: #004494;
+      }
+
+      .message {
+        color: #28a745;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .error-message {
+        color: #dc3545;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Support - Raise a Ticket</h1>
+
+      <form id="ticketForm" onsubmit="return submitTicket(event)">
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            required
+            placeholder="Enter your full name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder="Enter your email address"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phoneNumber">Phone Number</label>
+          <input
+            type="text"
+            id="phoneNumber"
+            name="phoneNumber"
+            required
+            placeholder="Enter your phone number"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="ticketCategory">Ticket Category</label>
+          <select id="ticketCategory" name="ticketCategory" required>
+            <option value="">Select Category</option>
+            <option value="Payment Issue">Payment Issue</option>
+            <option value="Document Issue">Document Issue</option>
+            <option value="Profile Issue">Profile Issue</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Issue Description</label>
+          <textarea
+            id="description"
+            name="description"
+            required
+            placeholder="Describe your issue"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="attachment">Attachment (optional)</label>
+          <input type="file" id="attachment" name="attachment" />
+        </div>
+
+        <button type="submit" class="btn">Submit Ticket</button>
+      </form>
+
+      <!-- Success Message -->
+      <div id="successMessage" class="message" style="display: none">
+        Your ticket has been successfully submitted!
+      </div>
+
+      <!-- Error Message -->
+      <div id="errorMessage" class="error-message" style="display: none">
+        There was an error submitting your ticket. Please try again later.
+      </div>
+    </div>
+
+    <script>
+      // Function to handle ticket submission
+      async function submitTicket(event) {
+        event.preventDefault(); // Prevent form from submitting the traditional way
+
+        // Clear previous messages
+        document.getElementById("successMessage").style.display = "none";
+        document.getElementById("errorMessage").style.display = "none";
+
+        // Gather form data
+        const fullName = document.getElementById("fullName").value;
+        const email = document.getElementById("email").value;
+        const phoneNumber = document.getElementById("phoneNumber").value;
+        const ticketCategory = document.getElementById("ticketCategory").value;
+        const description = document.getElementById("description").value;
+
+        // Check if all required fields are filled
+        if (
+          !fullName ||
+          !email ||
+          !phoneNumber ||
+          !ticketCategory ||
+          !description
+        ) {
+          document.getElementById("errorMessage").innerText =
+            "Please fill in all required fields.";
+          document.getElementById("errorMessage").style.display = "block";
+          return;
+        }
+        const pensionerid = localStorage.getItem('id')
+        const ticketData = {
+      fullName,
+      email,
+      phoneNumber,
+      ticketCategory,
+      description,
+      pensionerid
+    };
+        // Simulate successful submission (you can replace this with an actual API call)
+        // setTimeout(() => {
+        //   document.getElementById("ticketForm").reset(); // Reset the form fields
+        //   document.getElementById("successMessage").style.display = "block"; // Show success message
+        // }, 1000);
+        try {
+      // API call
+      const response = await fetch("http://localhost:8080/api/support/create-ticket", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(ticketData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert("Ticket created successfully");
+
+        // Reset form and show success message
+        document.getElementById("ticketForm").reset();
+        document.getElementById("successMessage").style.display = "block";
+      } else {
+        const error = await response.text();
+        alert("Failed to create ticket:", error);
+        document.getElementById("errorMessage").innerText = error;
+        document.getElementById("errorMessage").style.display = "block";
+      }
+    } catch (err) {
+      console.error("Error occurred:", err);
+      document.getElementById("errorMessage").innerText =
+        "An unexpected error occurred. Please try again later.";
+      document.getElementById("errorMessage").style.display = "block";
+    }
+      }
+    </script>
+  </body>
+</html>

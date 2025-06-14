@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logout</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4f8;
+        color: #333;
+        text-align: center;
+        padding-top: 50px;
+      }
+
+      .message {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #0056b3;
+      }
+
+      .btn {
+        background-color: #0056b3;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .btn:hover {
+        background-color: #004494;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="message">You have been successfully logged out.</div>
+
+    <button class="btn" onclick="redirectToLogin()">Go to Login</button>
+
+    <script>
+      // Function to handle the logout process
+      function logout() {
+        // Clear any session or token (Example: localStorage.clear(), sessionStorage.clear(), or cookies)
+        localStorage.removeItem("userToken"); // or sessionStorage.clear(); (depending on how you manage sessions)
+        localStorage.removeItem("id");
+        localStorage.removeItem("name");
+        localStorage.removeItem("role");
+
+        // Redirect to login page
+        window.location.href = "login.html"; // Replace with the actual login page URL
+      }
+
+      // Simulate logout on page load (or trigger this via a button, etc.)
+      window.onload = logout;
+    </script>
+  </body>
+</html>

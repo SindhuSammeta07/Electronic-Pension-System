@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generate Reports</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+      }
+      .sidebar {
+        height: 100vh;
+        width: 250px;
+        background-color: #0056b3;
+        padding-top: 30px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        color: white;
+        font-size: 18px;
+      }
+      .sidebar a {
+        display: block;
+        padding: 15px;
+        text-decoration: none;
+        color: white;
+        margin: 10px 0;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+      .sidebar a:hover {
+        background-color: #004494;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        width: 100%;
+        background-color: #ffffff;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      .btn {
+        background-color: #0056b3;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .btn:hover {
+        background-color: #004494;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2 style="text-align: center; color: white">Admin Dashboard</h2>
+      <a href="admin_dashboard.html">Dashboard</a>
+      <a href="manage_users.html">Manage Users</a>
+      <a href="manage_applications.html">Manage Applications</a>
+      <a href="view_payments.html">View Payments</a>
+      <a href="generate_reports.html">Generate Reports</a>
+      <a href="admin_logout.html" class="logout-btn">Logout</a>
+    </div>
+
+    <div class="content">
+      <h1>Generate Reports</h1>
+      <p>Choose a report type to generate:</p>
+      <button class="btn" onclick="generatePaymentReport()">Generate Payment Report</button>
+      <button class="btn" onclick="generateUserReport()">Generate User Report</button>
+      <button class="btn" onclick="generateApplicationReport()">Generate Application Status Report</button>
+      <div id="paymentReportSection" style="display:none;">
+        <h2>Payment Details</h2>
+        <table id="paymentReportTable">
+          <thead>
+            <tr>
+              <th>Payment ID</th>
+              <th>Pensioner ID</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="paymentReportTableBody">
+            <!-- Payment rows will be dynamically populated here -->
+          </tbody>
+        </table>
+        <button onclick="printTable()">Print</button>
+        <button onclick="downloadTable()">Download</button>
+      </div>
+      <div id="userReportSection" style="display:none;">
+        <h2>User Details</h2>
+        <table id="userReportTable">
+          <thead>
+            <tr>
+              <th>Pensioner ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody id="userReportTableBody">
+            <!-- User rows will be dynamically populated here -->
+          </tbody>
+        </table>
+        <button onclick="printTable1()">Print</button>
+        <button onclick="downloadTable1()">Download</button>
+      </div>
+      <div id="applicationReportSection" style="display:none;">
+        <h2>Application Details</h2>
+        <table id="applicationReportTable">
+          <thead>
+            <tr>
+              <th>Pensioner ID</th>
+              <th>Full Name</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="applicationReportTableBody">
+            <!-- Application rows will be dynamically populated here -->
+          </tbody>
+        </table>
+        <button onclick="printTable2()">Print</button>
+        <button onclick="downloadTable2()">Download</button>
+      </div>
+      
+    </div>
+    <script>
+ async function fetchPayments() {
+    try {
+      const response = await fetch('http://localhost:8080/api/get-all-payments'); // Make the GET request
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const payments = await response.json(); // Parse the JSON response
+
+      const tbody = document.getElementById('paymentReportTableBody');
+      tbody.innerHTML = ''; // Clear existing table rows
+
+      // Loop through payments and create rows
+      payments.forEach(payment => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+          <td>${payment.id}</td>
+          <td>${payment.pensionerId}</td>
+          <td>₹${payment.amount}</td>
+          <td>${payment.status}</td>
+        `;
+
+        tbody.appendChild(row); // Append the new row to the table body
+      });
+    } catch (error) {
+      console.error('Error fetching payments:', error);
+    }
+  }
+
+  // Function to generate payment report
+  function generatePaymentReport() {
+    fetchPayments().then(() => {
+      document.getElementById('paymentReportSection').style.display = 'block'; // Show the payment report section
+      document.getElementById('userReportSection').style.display = 'none';
+      document.getElementById('applicationReportSection').style.display = 'none';
+    });
+  }
+
+  // Function to print the payment report table
+  function printTable() {
+    const tableContent = document.getElementById('paymentReportSection').innerHTML;
+    const printWindow = window.open("", "", "height=600,width=800");
+    printWindow.document.write("<html><head><title>Payment Report</title></head><body>");
+    printWindow.document.write(tableContent);
+    printWindow.document.close();
+    printWindow.print();
+  }
+
+  // Function to download the payment report table as a CSV
+  function downloadTable() {
+    const table = document.getElementById('paymentReportTable');
+    let csv = [];
+    const rows = table.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+      const cols = row.querySelectorAll('th, td');
+      const rowData = [];
+      cols.forEach(col => rowData.push(col.innerText));
+      csv.push(rowData.join(','));
+    });
+
+    // Create a Blob object and download it
+    const csvContent = csv.join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) { // Feature detection for download support
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'payment_report.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+  async function fetchPensioners() {
+    try {
+      const response = await fetch("http://localhost:8080/api/get-all-pensioner");
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const pensioners = await response.json();
+      const tableBody = document.getElementById("userReportTableBody");
+      tableBody.innerHTML = ""; // Clear any existing rows
+
+      pensioners.forEach(pensioner => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${pensioner.pensionerId}</td>
+          <td>${pensioner.fullname}</td>
+          <td>${pensioner.email}</td>
+          <td>${pensioner.phone}</td>
+          <td>Pensioner</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    } catch (error) {
+      console.error("Failed to fetch pensioner data:", error);
+      alert("Error loading pensioner data. Please try again.");
+    }
+  }
+
+  // Function to generate the user report by calling fetchPensioners
+  function generateUserReport() {
+    fetchPensioners().then(() => {
+      document.getElementById('userReportSection').style.display = 'block'; // Show the user report section
+      document.getElementById('paymentReportSection').style.display = 'none';
+      document.getElementById('applicationReportSection').style.display = 'none';
+    });
+  }
+
+  // Function to print the user report table
+  function printTable1() {
+    const tableContent = document.getElementById('userReportSection').innerHTML;
+    const printWindow = window.open("", "", "height=600,width=800");
+    printWindow.document.write("<html><head><title>User Report</title></head><body>");
+    printWindow.document.write(tableContent);
+    printWindow.document.close();
+    printWindow.print();
+  }
+
+  // Function to download the user report table as a CSV
+  function downloadTable1() {
+    const table = document.getElementById('userReportTable');
+    let csv = [];
+    const rows = table.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+      const cols = row.querySelectorAll('th, td');
+      const rowData = [];
+      cols.forEach(col => rowData.push(col.innerText));
+      csv.push(rowData.join(','));
+    });
+
+    // Create a Blob object and download it
+    const csvContent = csv.join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) { // Feature detection for download support
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'user_report.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+  async function fetchApplications() {
+    try {
+      const response = await fetch('http://localhost:8080/api/get-all-application');
+      if (response.ok) {
+        const applications = await response.json();
+        const tableBody = document.getElementById("applicationReportTableBody");
+        tableBody.innerHTML = ""; // Clear any existing rows
+
+        applications.forEach(application => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${application.pensionerId}</td>
+            <td>${application.fullName}</td>
+            <td>${application.status}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } else {
+        console.error('Failed to fetch applications');
+      }
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+    }
+  }
+
+  // Function to generate the application report by calling fetchApplications
+  function generateApplicationReport() {
+    fetchApplications().then(() => {
+      document.getElementById('applicationReportSection').style.display = 'block';
+      document.getElementById('paymentReportSection').style.display = 'none'; // Show the payment report section
+      document.getElementById('userReportSection').style.display = 'none'; // Show the application report section
+    });
+  }
+
+  // Function to print the application report table
+  function printTable2() {
+    const tableContent = document.getElementById('applicationReportSection').innerHTML;
+    const printWindow = window.open("", "", "height=600,width=800");
+    printWindow.document.write("<html><head><title>Application Report</title></head><body>");
+    printWindow.document.write(tableContent);
+    printWindow.document.close();
+    printWindow.print();
+  }
+
+  // Function to download the application report table as a CSV
+  function downloadTable2() {
+    const table = document.getElementById('applicationReportTable');
+    let csv = [];
+    const rows = table.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+      const cols = row.querySelectorAll('th, td');
+      const rowData = [];
+      cols.forEach(col => rowData.push(col.innerText));
+      csv.push(rowData.join(','));
+    });
+
+    // Create a Blob object and download it
+    const csvContent = csv.join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) { // Feature detection for download support
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'application_report.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+
+
+    </script>
+  </body>
+</html>
